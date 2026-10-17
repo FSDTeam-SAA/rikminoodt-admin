@@ -113,13 +113,26 @@ export function SharedSidebar({ onCloseMobile }: SidebarProps) {
               if (onCloseMobile) onCloseMobile()
               router.push("/settings")
             }}
+            style={
+              pathname.startsWith("/settings")
+                ? {
+                    borderRadius: "8px",
+                    borderLeft: "2px solid #E88DA0",
+                    background: "#E88DA0",
+                  }
+                : undefined
+            }
             className={`w-full h-12 px-4 py-3 rounded-lg flex items-center gap-3 transition-colors text-base font-semibold cursor-pointer ${
               pathname.startsWith("/settings")
-                ? "bg-[#E88DA0] text-white"
+                ? "text-white shadow-xs"
                 : "text-neutral-500 hover:bg-slate-50 hover:text-gray-900"
             }`}
           >
-            <Settings className="w-5 h-5 shrink-0 text-neutral-500" />
+            <Settings
+              className={`w-5 h-5 shrink-0 ${
+                pathname.startsWith("/settings") ? "text-white" : "text-neutral-500"
+              }`}
+            />
             <span>Settings</span>
           </button>
         </div>

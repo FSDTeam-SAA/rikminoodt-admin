@@ -9,7 +9,6 @@ export interface ProxyRouteConfig {
 
 export const protectedRoutes: ProxyRouteConfig[] = [
   { path: "/admin", roles: ["admin", "manager"] },
-  { path: "/settings", roles: ["admin"] },
   { path: "/analytics", roles: ["admin", "manager"] },
 ]
 
