@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { Mail, Phone, ExternalLink, Check, UserCheck } from "lucide-react"
+import { Mail, Phone, UserCheck } from "lucide-react"
 import { toast } from "sonner"
 
 interface LeadItem {
@@ -159,7 +159,7 @@ export function LeadsCard() {
               <Button
                 variant="outline"
                 size="icon"
-                className="h-8 w-8 rounded-lg"
+                className="h-8 w-8 rounded-lg cursor-pointer"
                 title="Send email"
                 onClick={() => handleContact(lead, "email")}
               >
@@ -168,7 +168,7 @@ export function LeadsCard() {
               <Button
                 variant="outline"
                 size="icon"
-                className="h-8 w-8 rounded-lg"
+                className="h-8 w-8 rounded-lg cursor-pointer"
                 title="Call client"
                 onClick={() => handleContact(lead, "phone")}
               >
@@ -177,7 +177,7 @@ export function LeadsCard() {
               <Button
                 variant="default"
                 size="sm"
-                className="h-8 text-xs rounded-lg gap-1 font-medium"
+                className="h-8 text-xs rounded-lg gap-1 font-medium cursor-pointer"
                 onClick={() => markQualified(lead.id, lead.name)}
               >
                 <UserCheck className="h-3.5 w-3.5" />

@@ -1,7 +1,6 @@
 "use client"
 
 import * as React from "react"
-import Link from "next/link"
 import {
   LayoutDashboard,
   Building2,
@@ -13,13 +12,13 @@ import {
   Briefcase,
   HelpCircle,
   LogOut,
-  ChevronRight,
   Sparkles,
 } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
+import { useUIStore } from "@/store/ui.store"
 import { toast } from "sonner"
 
 export interface NavItem {
@@ -27,11 +26,10 @@ export interface NavItem {
   href: string
   icon: React.ComponentType<{ className?: string }>
   badge?: string
-  active?: boolean
 }
 
 const mainNavItems: NavItem[] = [
-  { title: "Overview", href: "#overview", icon: LayoutDashboard, active: true },
+  { title: "Overview", href: "#overview", icon: LayoutDashboard },
   { title: "Projects & Units", href: "#projects", icon: Building2, badge: "24" },
   { title: "Leads & Inquiries", href: "#leads", icon: Users, badge: "New 8" },
   { title: "Financials & Analytics", href: "#analytics", icon: TrendingUp },
@@ -46,14 +44,15 @@ const secondaryNavItems: NavItem[] = [
 ]
 
 interface SidebarProps {
-  currentTab: string
-  onTabChange: (tab: string) => void
   onCloseMobile?: () => void
 }
 
-export function DashboardSidebar({ currentTab, onTabChange, onCloseMobile }: SidebarProps) {
+export function SharedSidebar({ onCloseMobile }: SidebarProps) {
+  const currentTab = useUIStore((s) => s.currentTab)
+  const setCurrentTab = useUIStore((s) => s.setCurrentTab)
+
   const handleItemClick = (title: string) => {
-    onTabChange(title.toLowerCase())
+    setCurrentTab(title.toLowerCase())
     if (onCloseMobile) onCloseMobile()
     toast.info(`Navigated to ${title}`, {
       description: `Viewing ${title} workspace section`,
@@ -106,7 +105,13 @@ export function DashboardSidebar({ currentTab, onTabChange, onCloseMobile }: Sid
                   }`}
                 >
                   <div className="flex items-center gap-3">
-                    <Icon className={`h-4 w-4 ${isSelected ? "text-primary-foreground" : "text-muted-foreground"}`} />
+                    <Icon
+                      className={`h-4 w-4 ${
+                        isSelected
+                          ? "text-primary-foreground"
+                          : "text-muted-foreground"
+                      }`}
+                    />
                     <span>{item.title}</span>
                   </div>
                   {item.badge && (
@@ -149,7 +154,13 @@ export function DashboardSidebar({ currentTab, onTabChange, onCloseMobile }: Sid
                   }`}
                 >
                   <div className="flex items-center gap-3">
-                    <Icon className={`h-4 w-4 ${isSelected ? "text-primary-foreground" : "text-muted-foreground"}`} />
+                    <Icon
+                      className={`h-4 w-4 ${
+                        isSelected
+                          ? "text-primary-foreground"
+                          : "text-muted-foreground"
+                      }`}
+                    />
                     <span>{item.title}</span>
                   </div>
                 </button>
@@ -158,11 +169,12 @@ export function DashboardSidebar({ currentTab, onTabChange, onCloseMobile }: Sid
           </nav>
         </div>
 
-        {/* Upgrade Card / Info Box */}
         <div className="rounded-xl border border-border/80 bg-gradient-to-br from-primary/5 via-primary/10 to-transparent p-3.5 shadow-sm">
           <div className="flex items-center gap-2 mb-1.5">
             <Sparkles className="h-4 w-4 text-primary" />
-            <span className="text-xs font-semibold text-foreground">Real-Time Sync</span>
+            <span className="text-xs font-semibold text-foreground">
+              Real-Time Sync
+            </span>
           </div>
           <p className="text-[11px] text-muted-foreground leading-relaxed">
             Connected to Rikminoodt Cloud. Changes sync across all endpoints.
@@ -192,7 +204,7 @@ export function DashboardSidebar({ currentTab, onTabChange, onCloseMobile }: Sid
           <Button
             variant="ghost"
             size="icon"
-            className="h-8 w-8 text-muted-foreground hover:text-destructive"
+            className="h-8 w-8 text-muted-foreground hover:text-destructive cursor-pointer"
             onClick={() => {
               toast.info("Logged out successfully", {
                 description: "Session closed securely.",
@@ -206,3 +218,5 @@ export function DashboardSidebar({ currentTab, onTabChange, onCloseMobile }: Sid
     </aside>
   )
 }
+
+export default SharedSidebar

@@ -2,8 +2,7 @@
 
 import * as React from "react"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { CheckCircle2, FileText, DollarSign, Image as ImageIcon, UserPlus, Clock } from "lucide-react"
+import { DollarSign, Image as ImageIcon, FileText, UserPlus } from "lucide-react"
 import { toast } from "sonner"
 
 interface ActivityItem {

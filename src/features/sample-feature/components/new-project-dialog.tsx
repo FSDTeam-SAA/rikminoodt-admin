@@ -21,37 +21,23 @@ import {
 } from "@/components/ui/select"
 import { toast } from "sonner"
 import { Building2, Sparkles } from "lucide-react"
-
-export interface ProjectData {
-  id: string
-  name: string
-  category: string
-  location: string
-  price: string
-  units: number
-  status: "Active" | "Under Contract" | "Upcoming" | "Sold Out"
-  inquiries: number
-  roi: string
-}
+import { useCreateProjectMutation } from "../hooks"
+import { ProjectStatus } from "../types"
 
 interface NewProjectDialogProps {
   open: boolean
   onOpenChange: (open: boolean) => void
-  onAddProject: (project: ProjectData) => void
 }
 
-export function NewProjectDialog({
-  open,
-  onOpenChange,
-  onAddProject,
-}: NewProjectDialogProps) {
+export function NewProjectDialog({ open, onOpenChange }: NewProjectDialogProps) {
   const [name, setName] = React.useState("")
   const [category, setCategory] = React.useState("Waterfront Estate")
   const [location, setLocation] = React.useState("")
   const [price, setPrice] = React.useState("")
   const [units, setUnits] = React.useState(12)
-  const [status, setStatus] = React.useState<"Active" | "Under Contract" | "Upcoming" | "Sold Out">("Active")
-  const [isSubmitting, setIsSubmitting] = React.useState(false)
+  const [status, setStatus] = React.useState<ProjectStatus>("Active")
+
+  const createMutation = useCreateProjectMutation()
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
@@ -63,38 +49,24 @@ export function NewProjectDialog({
       return
     }
 
-    setIsSubmitting(true)
-
-    setTimeout(() => {
-      const newProj: ProjectData = {
-        id: `RM-${Math.floor(100 + Math.random() * 900)}`,
+    createMutation.mutate(
+      {
         name,
         category,
         location,
         price,
         units: Number(units) || 1,
         status,
-        inquiries: 0,
-        roi: "12.5%",
-      }
-
-      onAddProject(newProj)
-      setIsSubmitting(false)
-      onOpenChange(false)
-
-      // Reset form
-      setName("")
-      setLocation("")
-      setPrice("")
-
-      toast.success(`"${name}" created successfully!`, {
-        description: `Added to Rikminoodt portfolio at ${location}.`,
-        action: {
-          label: "View",
-          onClick: () => toast.info(`Viewing details for ${name}`),
+      },
+      {
+        onSuccess: () => {
+          onOpenChange(false)
+          setName("")
+          setLocation("")
+          setPrice("")
         },
-      })
-    }, 600)
+      }
+    )
   }
 
   return (
@@ -154,7 +126,7 @@ export function NewProjectDialog({
               <Select
                 value={status}
                 onValueChange={(val) => {
-                  if (val) setStatus(val as any)
+                  if (val) setStatus(val as ProjectStatus)
                 }}
               >
                 <SelectTrigger className="h-9 text-xs">
@@ -237,11 +209,11 @@ export function NewProjectDialog({
             <Button
               type="submit"
               size="sm"
-              disabled={isSubmitting}
-              className="gap-1.5"
+              disabled={createMutation.isPending}
+              className="gap-1.5 cursor-pointer"
             >
               <Sparkles className="h-3.5 w-3.5" />
-              {isSubmitting ? "Publishing..." : "Publish Project"}
+              {createMutation.isPending ? "Publishing..." : "Publish Project"}
             </Button>
           </DialogFooter>
         </form>

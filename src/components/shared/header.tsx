@@ -23,22 +23,21 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
-import { ThemeToggle } from "@/components/theme-toggle"
-import { DashboardSidebar } from "./sidebar"
+import { ThemeToggle } from "./theme-toggle"
+import { SharedSidebar } from "./sidebar"
+import { useUIStore } from "@/store/ui.store"
 import { toast } from "sonner"
 
-interface HeaderProps {
-  currentTab: string
-  onTabChange: (tab: string) => void
+interface SharedHeaderProps {
   onOpenNewProject: () => void
 }
 
-export function DashboardHeader({
-  currentTab,
-  onTabChange,
-  onOpenNewProject,
-}: HeaderProps) {
-  const [mobileOpen, setMobileOpen] = React.useState(false)
+export function SharedHeader({ onOpenNewProject }: SharedHeaderProps) {
+  const currentTab = useUIStore((s) => s.currentTab)
+  const sidebarOpen = useUIStore((s) => s.sidebarOpen)
+  const setSidebarOpen = useUIStore((s) => s.setSidebarOpen)
+  const unreadNotifications = useUIStore((s) => s.unreadNotifications)
+  const clearNotifications = useUIStore((s) => s.clearNotifications)
 
   const triggerToastDemo = (type: "success" | "error" | "info" | "promise") => {
     switch (type) {
@@ -80,7 +79,7 @@ export function DashboardHeader({
       {/* Left side: Mobile Hamburger + Breadcrumb */}
       <div className="flex items-center gap-3">
         {/* Mobile Sidebar Sheet */}
-        <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
+        <Sheet open={sidebarOpen} onOpenChange={setSidebarOpen}>
           <SheetTrigger
             render={
               <Button
@@ -94,11 +93,7 @@ export function DashboardHeader({
             <Menu className="h-5 w-5" />
           </SheetTrigger>
           <SheetContent side="left" className="p-0 w-72">
-            <DashboardSidebar
-              currentTab={currentTab}
-              onTabChange={onTabChange}
-              onCloseMobile={() => setMobileOpen(false)}
-            />
+            <SharedSidebar onCloseMobile={() => setSidebarOpen(false)} />
           </SheetContent>
         </Sheet>
 
@@ -186,15 +181,17 @@ export function DashboardHeader({
             }
           >
             <Bell className="h-4 w-4" />
-            <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-destructive text-[10px] font-bold text-destructive-foreground">
-              3
-            </span>
+            {unreadNotifications > 0 && (
+              <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-destructive text-[10px] font-bold text-destructive-foreground">
+                {unreadNotifications}
+              </span>
+            )}
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-80">
             <div className="flex items-center justify-between px-3 py-2 border-b border-border/50">
               <span className="text-xs font-semibold">Notifications</span>
               <Badge variant="secondary" className="text-[10px]">
-                3 new
+                {unreadNotifications} new
               </Badge>
             </div>
             <div className="py-1">
@@ -251,6 +248,7 @@ export function DashboardHeader({
                 size="sm"
                 className="w-full text-xs justify-center text-primary"
                 onClick={() => {
+                  clearNotifications()
                   toast.info("All notifications marked as read")
                 }}
               >
@@ -276,3 +274,5 @@ export function DashboardHeader({
     </header>
   )
 }
+
+export default SharedHeader
