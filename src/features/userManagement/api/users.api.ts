@@ -1,5 +1,51 @@
 import api from "@/lib/api"
-import { UserItem, UsersFilter, UsersResponse } from "../types"
+import { UserItem, UsersFilter, UsersResponse, GeneratedBook, UserOrder } from "../types"
+
+export const sampleBooks: GeneratedBook[] = [
+  { id: "b-1", title: "Noah and the Ocean Friends", cover: "/books/noah.jpg" },
+  { id: "b-2", title: "Mia's Magic Garden", cover: "/books/mia.jpg" },
+  { id: "b-3", title: "Noah and the Ocean Friends", cover: "/books/noah.jpg" },
+  { id: "b-4", title: "Ben's Big Dream", cover: "/books/ben.jpg" },
+  { id: "b-5", title: "Noah and the Ocean Friends", cover: "/books/noah.jpg" },
+  { id: "b-6", title: "Ben's Big Dream", cover: "/books/ben.jpg" },
+  { id: "b-7", title: "Noah and the Ocean Friends", cover: "/books/noah.jpg" },
+  { id: "b-8", title: "Noah and the Ocean Friends", cover: "/books/noah.jpg" },
+  { id: "b-9", title: "Noah and the Ocean Friends", cover: "/books/noah.jpg" },
+  { id: "b-10", title: "Noah and the Ocean Friends", cover: "/books/noah.jpg" },
+  { id: "b-11", title: "Ben's Big Dream", cover: "/books/ben.jpg" },
+  { id: "b-12", title: "Noah and the Ocean Friends", cover: "/books/noah.jpg" },
+  { id: "b-13", title: "Ben's Big Dream", cover: "/books/ben.jpg" },
+  { id: "b-14", title: "Noah and the Ocean Friends", cover: "/books/noah.jpg" },
+  { id: "b-15", title: "Mia's Magic Garden", cover: "/books/mia.jpg" },
+  { id: "b-16", title: "Noah and the Ocean Friends", cover: "/books/noah.jpg" },
+]
+
+export const sampleOrders: UserOrder[] = [
+  {
+    id: "ORD-1234",
+    bookTitle: "Ben’s Big Dream",
+    orderDate: "8/25/2027",
+    amount: "$50.99",
+    copies: 10,
+    status: "Delivered",
+  },
+  {
+    id: "ORD-1234",
+    bookTitle: "Ben’s Big Dream",
+    orderDate: "8/25/2027",
+    amount: "$50.99",
+    copies: 10,
+    status: "Delivered",
+  },
+  {
+    id: "ORD-1234",
+    bookTitle: "Ben’s Big Dream",
+    orderDate: "8/25/2027",
+    amount: "$50.99",
+    copies: 10,
+    status: "Delivered",
+  },
+]
 
 export const mockUsers: UserItem[] = [
   {
@@ -10,6 +56,10 @@ export const mockUsers: UserItem[] = [
     registrationDate: "8/25/2027",
     booksGenerated: 50,
     booksPrinted: 10,
+    status: "Active",
+    memberSince: "9/16/2026",
+    generatedBooks: sampleBooks,
+    orderHistory: sampleOrders,
   },
   {
     id: "usr-2",
@@ -19,6 +69,10 @@ export const mockUsers: UserItem[] = [
     registrationDate: "2/2/2026",
     booksGenerated: 35,
     booksPrinted: 6,
+    status: "Active",
+    memberSince: "1/12/2026",
+    generatedBooks: sampleBooks,
+    orderHistory: sampleOrders,
   },
   {
     id: "usr-3",
@@ -28,6 +82,10 @@ export const mockUsers: UserItem[] = [
     registrationDate: "5/5/2023",
     booksGenerated: 55,
     booksPrinted: 11,
+    status: "Active",
+    memberSince: "3/10/2023",
+    generatedBooks: sampleBooks,
+    orderHistory: sampleOrders,
   },
   {
     id: "usr-4",
@@ -37,6 +95,10 @@ export const mockUsers: UserItem[] = [
     registrationDate: "8/17/2025",
     booksGenerated: 50,
     booksPrinted: 14,
+    status: "Active",
+    memberSince: "6/01/2025",
+    generatedBooks: sampleBooks,
+    orderHistory: sampleOrders,
   },
   {
     id: "usr-5",
@@ -46,6 +108,10 @@ export const mockUsers: UserItem[] = [
     registrationDate: "6/1/2025",
     booksGenerated: 30,
     booksPrinted: 12,
+    status: "Active",
+    memberSince: "4/15/2025",
+    generatedBooks: sampleBooks,
+    orderHistory: sampleOrders,
   },
   {
     id: "usr-6",
@@ -55,6 +121,10 @@ export const mockUsers: UserItem[] = [
     registrationDate: "11/22/2028",
     booksGenerated: 60,
     booksPrinted: 15,
+    status: "Active",
+    memberSince: "10/05/2028",
+    generatedBooks: sampleBooks,
+    orderHistory: sampleOrders,
   },
   {
     id: "usr-7",
@@ -64,6 +134,10 @@ export const mockUsers: UserItem[] = [
     registrationDate: "8/25/2027",
     booksGenerated: 50,
     booksPrinted: 10,
+    status: "Active",
+    memberSince: "9/16/2026",
+    generatedBooks: sampleBooks,
+    orderHistory: sampleOrders,
   },
   {
     id: "usr-8",
@@ -73,6 +147,10 @@ export const mockUsers: UserItem[] = [
     registrationDate: "7/19/2028",
     booksGenerated: 40,
     booksPrinted: 9,
+    status: "Active",
+    memberSince: "5/20/2028",
+    generatedBooks: sampleBooks,
+    orderHistory: sampleOrders,
   },
   {
     id: "usr-9",
@@ -82,6 +160,10 @@ export const mockUsers: UserItem[] = [
     registrationDate: "3/14/2026",
     booksGenerated: 45,
     booksPrinted: 8,
+    status: "Active",
+    memberSince: "1/18/2026",
+    generatedBooks: sampleBooks,
+    orderHistory: sampleOrders,
   },
   {
     id: "usr-10",
@@ -91,6 +173,10 @@ export const mockUsers: UserItem[] = [
     registrationDate: "9/12/2029",
     booksGenerated: 70,
     booksPrinted: 20,
+    status: "Active",
+    memberSince: "7/08/2029",
+    generatedBooks: sampleBooks,
+    orderHistory: sampleOrders,
   },
 ]
 
@@ -123,7 +209,8 @@ export const usersApi = {
       const { data } = await api.get<UserItem>(`/users/${id}`)
       return data
     } catch {
-      return mockUsers.find((u) => u.id === id)
+      const found = mockUsers.find((u) => u.id === id)
+      return found || mockUsers[0]
     }
   },
 }

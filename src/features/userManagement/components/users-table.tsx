@@ -5,9 +5,15 @@ import { Search, ChevronLeft, ChevronRight, Loader2 } from "lucide-react"
 import { useUsers } from "../hooks"
 import { UserItem } from "../types"
 import { useDebounce } from "@/hooks/use-debounce"
+import { useRouter } from "next/navigation"
 import { toast } from "sonner"
 
-export function UsersTable() {
+interface UsersTableProps {
+  onSelectUser?: (userId: string) => void
+}
+
+export function UsersTable({ onSelectUser }: UsersTableProps) {
+  const router = useRouter()
   const [searchTerm, setSearchTerm] = React.useState("")
   const [currentPage, setCurrentPage] = React.useState(1)
 
@@ -22,9 +28,12 @@ export function UsersTable() {
   const totalResults = data?.total || 120
 
   const handleViewUser = (user: UserItem) => {
-    toast.info(`Viewing ${user.name}`, {
-      description: `Email: ${user.email} | Books: ${user.booksGenerated} generated, ${user.booksPrinted} printed`,
-    })
+    toast.info(`Opening details for ${user.name}`)
+    if (onSelectUser) {
+      onSelectUser(user.id)
+    } else {
+      router.push(`/users/${user.id}`)
+    }
   }
 
   return (

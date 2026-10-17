@@ -1,3 +1,18 @@
+export interface GeneratedBook {
+  id: string
+  title: string
+  cover: string
+}
+
+export interface UserOrder {
+  id: string
+  bookTitle: string
+  orderDate: string
+  amount: string
+  copies: number
+  status: "Delivered" | "Processing" | "Cancelled"
+}
+
 export interface UserItem {
   id: string
   name: string
@@ -6,6 +21,10 @@ export interface UserItem {
   registrationDate: string
   booksGenerated: number
   booksPrinted: number
+  status?: "Active" | "Inactive"
+  memberSince?: string
+  generatedBooks?: GeneratedBook[]
+  orderHistory?: UserOrder[]
 }
 
 export interface UsersFilter {
