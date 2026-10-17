@@ -78,22 +78,20 @@ export function SharedSidebar({ onCloseMobile }: SidebarProps) {
                 style={
                   isActive
                     ? {
-                        borderRadius: "8px",
-                        borderLeft: "2px solid #E88DA0",
-                        background: "#E88DA0",
-                      }
+                      borderRadius: "8px",
+                      borderLeft: "2px solid #E88DA0",
+                      background: "#E88DA0",
+                    }
                     : undefined
                 }
-                className={`w-full h-12 px-4 py-3 rounded-lg flex items-center gap-3 transition-colors text-base font-semibold cursor-pointer ${
-                  isActive
+                className={`w-full h-12 px-4 py-3 rounded-lg flex items-center gap-3 transition-colors text-base font-semibold cursor-pointer ${isActive
                     ? "text-white shadow-xs"
                     : "text-neutral-500 hover:bg-slate-50 hover:text-gray-900"
-                }`}
+                  }`}
               >
                 <Icon
-                  className={`w-5 h-5 shrink-0 ${
-                    isActive ? "text-white" : "text-neutral-500"
-                  }`}
+                  className={`w-5 h-5 shrink-0 ${isActive ? "text-white" : "text-neutral-500"
+                    }`}
                 />
                 <span className="truncate">{item.title}</span>
               </button>
@@ -108,11 +106,10 @@ export function SharedSidebar({ onCloseMobile }: SidebarProps) {
         <div className="flex flex-col gap-2">
           <button
             onClick={() => handleItemClick("settings", "Settings")}
-            className={`w-full h-12 px-4 py-3 rounded-lg flex items-center gap-3 transition-colors text-base font-semibold cursor-pointer ${
-              currentTab === "settings"
+            className={`w-full h-12 px-4 py-3 rounded-lg flex items-center gap-3 transition-colors text-base font-semibold cursor-pointer ${currentTab === "settings"
                 ? "bg-[#E88DA0] text-white"
                 : "text-neutral-500 hover:bg-slate-50 hover:text-gray-900"
-            }`}
+              }`}
           >
             <Settings className="w-5 h-5 shrink-0 text-neutral-500" />
             <span>Settings</span>

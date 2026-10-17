@@ -1,4 +1,4 @@
-import { mockProjects } from "../features/sample-feature/api/projects.api"
+import { mockProjects } from "../features/overview/api/projects.api"
 
 describe("Rikminoodt Admin API & Mock Data", () => {
   it("should have initial mock projects defined", () => {
