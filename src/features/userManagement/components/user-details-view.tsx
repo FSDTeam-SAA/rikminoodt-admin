@@ -6,6 +6,7 @@ import { useUser } from "../hooks"
 import { UserItem } from "../types"
 import { useRouter } from "next/navigation"
 import { toast } from "sonner"
+import { findUserBySlugOrId } from "../api"
 
 interface UserDetailsViewProps {
   userId?: string
@@ -16,17 +17,8 @@ export function UserDetailsView({ userId = "usr-1", onBack }: UserDetailsViewPro
   const router = useRouter()
   const { data: user, isLoading } = useUser(userId)
 
-  const activeUser: UserItem = user || {
-    id: "usr-1",
-    name: "Akah Larry",
-    email: "Secretary@gmail.com",
-    avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80",
-    registrationDate: "8/25/2027",
-    booksGenerated: 50,
-    booksPrinted: 10,
-    status: "Active",
-    memberSince: "9/16/2026",
-  }
+  const fallbackUser = React.useMemo(() => findUserBySlugOrId(userId), [userId])
+  const activeUser: UserItem = user || fallbackUser
 
   // 16 books split into 2 rows of 8 as in screenshot
   const booksRow1 = (activeUser.generatedBooks || []).slice(0, 8)

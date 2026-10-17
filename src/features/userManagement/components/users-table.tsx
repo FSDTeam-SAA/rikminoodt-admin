@@ -9,6 +9,7 @@ import { useRouter } from "next/navigation"
 import { toast } from "sonner"
 
 import { slugifyUsername } from "../api"
+import Link from "next/link"
 
 interface UsersTableProps {
   onSelectUser?: (userId: string) => void
@@ -85,16 +86,19 @@ export function UsersTable({ onSelectUser }: UsersTableProps) {
                 className="w-full px-4 py-3.5 hover:bg-slate-50/60 transition-colors grid grid-cols-12 items-center text-base"
               >
                 {/* User Name with Avatar */}
-                <div className="col-span-3 flex items-center gap-3 pl-2">
+                <Link
+                  href={`/user-management/${slugifyUsername(user.name)}`}
+                  className="col-span-3 flex items-center gap-3 pl-2 group cursor-pointer"
+                >
                   <img
                     src={user.avatar}
                     alt={user.name}
-                    className="w-9 h-9 rounded-full object-cover shrink-0 border border-slate-100"
+                    className="w-9 h-9 rounded-full object-cover shrink-0 border border-slate-100 group-hover:ring-2 group-hover:ring-[#E88DA0]/50 transition-all"
                   />
-                  <span className="text-zinc-800 font-normal truncate">
+                  <span className="text-zinc-800 font-normal truncate group-hover:text-[#E88DA0] transition-colors">
                     {user.name}
                   </span>
-                </div>
+                </Link>
 
                 {/* Email Address */}
                 <div className="col-span-3 text-center text-slate-900 font-normal truncate px-2">
@@ -118,8 +122,8 @@ export function UsersTable({ onSelectUser }: UsersTableProps) {
 
                 {/* Action Icon */}
                 <div className="col-span-1 flex justify-center items-center">
-                  <button
-                    onClick={() => handleViewUser(user)}
+                  <Link
+                    href={`/user-management/${slugifyUsername(user.name)}`}
                     className="w-6 h-6 bg-blue-400/10 hover:bg-blue-400/25 rounded-full flex items-center justify-center transition-all cursor-pointer group"
                     title={`View ${user.name}`}
                   >
@@ -144,7 +148,7 @@ export function UsersTable({ onSelectUser }: UsersTableProps) {
                         fill="currentColor"
                       />
                     </svg>
-                  </button>
+                  </Link>
                 </div>
               </div>
             ))

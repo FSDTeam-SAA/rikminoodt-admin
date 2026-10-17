@@ -2,26 +2,8 @@
 
 import * as React from "react"
 import { UsersTable } from "./users-table"
-import { UserDetailsView } from "./user-details-view"
 
-interface UserManagementViewProps {
-  initialUserId?: string
-}
-
-export function UserManagementView({ initialUserId }: UserManagementViewProps) {
-  const [selectedUserId, setSelectedUserId] = React.useState<string | null>(
-    initialUserId || null
-  )
-
-  if (selectedUserId) {
-    return (
-      <UserDetailsView
-        userId={selectedUserId}
-        onBack={() => setSelectedUserId(null)}
-      />
-    )
-  }
-
+export function UserManagementView() {
   return (
     <div className="flex flex-col gap-6 w-full font-['Nunito_Sans']">
       {/* Title & Subtitle */}
@@ -34,8 +16,8 @@ export function UserManagementView({ initialUserId }: UserManagementViewProps) {
         </p>
       </div>
 
-      {/* Users Data Table & Search & Pagination */}
-      <UsersTable onSelectUser={(id) => setSelectedUserId(id)} />
+      {/* Users Data Table */}
+      <UsersTable />
     </div>
   )
 }
