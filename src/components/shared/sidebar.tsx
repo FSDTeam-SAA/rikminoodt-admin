@@ -3,44 +3,24 @@
 import * as React from "react"
 import {
   LayoutDashboard,
-  Building2,
   Users,
-  TrendingUp,
-  FolderKanban,
+  ShoppingCart,
   Settings,
-  ShieldCheck,
-  Briefcase,
-  HelpCircle,
   LogOut,
-  Sparkles,
 } from "lucide-react"
-import { Badge } from "@/components/ui/badge"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Button } from "@/components/ui/button"
-import { Separator } from "@/components/ui/separator"
 import { useUIStore } from "@/store/ui.store"
 import { toast } from "sonner"
 
 export interface NavItem {
   title: string
-  href: string
+  key: string
   icon: React.ComponentType<{ className?: string }>
-  badge?: string
 }
 
 const mainNavItems: NavItem[] = [
-  { title: "Overview", href: "#overview", icon: LayoutDashboard },
-  { title: "Projects & Units", href: "#projects", icon: Building2, badge: "24" },
-  { title: "Leads & Inquiries", href: "#leads", icon: Users, badge: "New 8" },
-  { title: "Financials & Analytics", href: "#analytics", icon: TrendingUp },
-  { title: "Portfolio Assets", href: "#portfolio", icon: FolderKanban },
-  { title: "Investors & Clients", href: "#clients", icon: Briefcase },
-]
-
-const secondaryNavItems: NavItem[] = [
-  { title: "Access & Roles", href: "#roles", icon: ShieldCheck },
-  { title: "Settings", href: "#settings", icon: Settings },
-  { title: "Support & Docs", href: "#docs", icon: HelpCircle },
+  { title: "Dashboard", key: "dashboard", icon: LayoutDashboard },
+  { title: "User Management", key: "users", icon: Users },
+  { title: "Orders Management", key: "orders", icon: ShoppingCart },
 ]
 
 interface SidebarProps {
@@ -51,169 +31,149 @@ export function SharedSidebar({ onCloseMobile }: SidebarProps) {
   const currentTab = useUIStore((s) => s.currentTab)
   const setCurrentTab = useUIStore((s) => s.setCurrentTab)
 
-  const handleItemClick = (title: string) => {
-    setCurrentTab(title.toLowerCase())
+  const handleItemClick = (key: string, title: string) => {
+    setCurrentTab(key)
     if (onCloseMobile) onCloseMobile()
     toast.info(`Navigated to ${title}`, {
-      description: `Viewing ${title} workspace section`,
+      description: `Viewing ${title} section`,
+    })
+  }
+
+  const handleLogout = () => {
+    toast.info("Logged out", {
+      description: "Admin session ended securely.",
     })
   }
 
   return (
-    <aside className="flex h-full w-64 flex-col border-r border-border/80 bg-sidebar text-sidebar-foreground">
-      {/* Brand Header */}
-      <div className="flex h-16 items-center justify-between px-6 border-b border-border/60">
-        <div className="flex items-center gap-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary text-primary-foreground font-bold shadow-md shadow-primary/20">
-            <Building2 className="h-5 w-5" />
+    <aside className="flex h-screen w-64 flex-col justify-between border-r border-slate-100 bg-white px-4 py-6 font-['Nunito_Sans'] shadow-xs select-none">
+      {/* Top Section */}
+      <div className="flex flex-col gap-6">
+        {/* Brand / Logo Area */}
+        <div className="px-2 py-1 flex items-center gap-2">
+          {/* Rocket Icon */}
+          <div className="relative flex items-center justify-center w-9 h-9 shrink-0">
+            <svg
+              viewBox="0 0 36 36"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+              className="w-8 h-8"
+            >
+              {/* Thrust Flame */}
+              <path
+                d="M10 24L7 30C7 30 11 29 13 27L10 24Z"
+                fill="#38BDF8"
+              />
+              <path
+                d="M8 26L6 29C6 29 8.5 28.5 9.5 27.5L8 26Z"
+                fill="#FBBF24"
+              />
+              {/* Fins */}
+              <path
+                d="M9 22L4 21C4 21 5 15 11 16L12 19L9 22Z"
+                fill="#F59E0B"
+              />
+              <path
+                d="M21 16L22 11C22 11 28 12 27 18L24 19L21 16Z"
+                fill="#F59E0B"
+              />
+              {/* Rocket Main Body */}
+              <path
+                d="M28 8C28 8 26 3 20 5C14 7 11 15 11 20L17 26C22 26 30 23 32 17C34 11 28 8 28 8Z"
+                fill="#E88DA0"
+              />
+              {/* Porthole Window */}
+              <circle cx="21" cy="14" r="3.2" fill="#FFFFFF" />
+              <circle cx="21" cy="14" r="2.2" fill="#60A5FA" />
+              {/* Nose Cone Accent */}
+              <path
+                d="M26 6.5C26 6.5 27 8 28 8C29 8 30.5 7.5 30.5 7.5C30.5 7.5 28.5 5 26 6.5Z"
+                fill="#FB7185"
+              />
+            </svg>
           </div>
-          <div className="flex flex-col">
-            <span className="text-base font-bold tracking-tight text-foreground flex items-center gap-1.5">
-              Rikminoodt
-              <span className="inline-flex items-center rounded-full bg-primary/10 px-1.5 py-0.5 text-[10px] font-semibold text-primary">
-                PRO
-              </span>
-            </span>
-            <span className="text-xs text-muted-foreground font-medium">
-              Admin Portal
-            </span>
+
+          {/* Boekerello Text Logo with multi-colored letters as in user snippet */}
+          <div className="h-9 flex items-center font-bold text-2xl font-['Inter'] tracking-tight">
+            <span className="text-[#E88DA0]">B</span>
+            <span className="text-orange-400">o</span>
+            <span className="text-blue-400">e</span>
+            <span className="text-green-500">k</span>
+            <span className="text-slate-400">e</span>
+            <span className="text-[#E88DA0]">r</span>
+            <span className="text-orange-400">e</span>
+            <span className="text-blue-400">l</span>
+            <span className="text-green-500">l</span>
+            <span className="text-[#E88DA0]">o</span>
           </div>
         </div>
-      </div>
 
-      {/* Main Navigation */}
-      <div className="flex-1 overflow-y-auto px-4 py-4 space-y-6">
-        <div>
-          <div className="px-3 mb-2 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
-            Main Menu
-          </div>
-          <nav className="space-y-1">
-            {mainNavItems.map((item) => {
-              const Icon = item.icon
-              const isSelected =
-                currentTab === item.title.toLowerCase() ||
-                (currentTab === "overview" && item.title === "Overview")
+        {/* Navigation Items */}
+        <nav className="flex flex-col gap-2">
+          {mainNavItems.map((item) => {
+            const Icon = item.icon
+            const isActive =
+              currentTab === item.key ||
+              (currentTab === "overview" && item.key === "dashboard")
 
-              return (
-                <button
-                  key={item.title}
-                  onClick={() => handleItemClick(item.title)}
-                  className={`w-full flex items-center justify-between rounded-lg px-3 py-2.5 text-sm font-medium transition-all ${
-                    isSelected
-                      ? "bg-primary text-primary-foreground shadow-sm shadow-primary/25 font-semibold"
-                      : "text-muted-foreground hover:bg-muted/80 hover:text-foreground"
+            return (
+              <button
+                key={item.key}
+                onClick={() => handleItemClick(item.key, item.title)}
+                style={
+                  isActive
+                    ? {
+                        borderRadius: "8px",
+                        borderLeft: "2px solid #E88DA0",
+                        background: "#E88DA0",
+                      }
+                    : undefined
+                }
+                className={`w-full h-12 px-4 py-3 rounded-lg flex items-center gap-3 transition-colors text-base font-semibold cursor-pointer ${
+                  isActive
+                    ? "text-white shadow-xs"
+                    : "text-neutral-500 hover:bg-slate-50 hover:text-gray-900"
+                }`}
+              >
+                <Icon
+                  className={`w-5 h-5 shrink-0 ${
+                    isActive ? "text-white" : "text-neutral-500"
                   }`}
-                >
-                  <div className="flex items-center gap-3">
-                    <Icon
-                      className={`h-4 w-4 ${
-                        isSelected
-                          ? "text-primary-foreground"
-                          : "text-muted-foreground"
-                      }`}
-                    />
-                    <span>{item.title}</span>
-                  </div>
-                  {item.badge && (
-                    <Badge
-                      variant={isSelected ? "secondary" : "outline"}
-                      className={`text-[10px] px-1.5 py-0 h-5 font-medium ${
-                        isSelected
-                          ? "bg-white/20 text-white border-transparent"
-                          : "bg-muted text-muted-foreground"
-                      }`}
-                    >
-                      {item.badge}
-                    </Badge>
-                  )}
-                </button>
-              )
-            })}
-          </nav>
-        </div>
+                />
+                <span className="truncate">{item.title}</span>
+              </button>
+            )
+          })}
+        </nav>
 
-        <Separator className="opacity-50" />
+        {/* Separator Line */}
+        <div className="h-0 border-b border-violet-50/80 my-1" />
 
-        <div>
-          <div className="px-3 mb-2 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
-            Preferences & Security
-          </div>
-          <nav className="space-y-1">
-            {secondaryNavItems.map((item) => {
-              const Icon = item.icon
-              const isSelected = currentTab === item.title.toLowerCase()
-
-              return (
-                <button
-                  key={item.title}
-                  onClick={() => handleItemClick(item.title)}
-                  className={`w-full flex items-center justify-between rounded-lg px-3 py-2 text-sm font-medium transition-all ${
-                    isSelected
-                      ? "bg-primary text-primary-foreground font-semibold"
-                      : "text-muted-foreground hover:bg-muted/80 hover:text-foreground"
-                  }`}
-                >
-                  <div className="flex items-center gap-3">
-                    <Icon
-                      className={`h-4 w-4 ${
-                        isSelected
-                          ? "text-primary-foreground"
-                          : "text-muted-foreground"
-                      }`}
-                    />
-                    <span>{item.title}</span>
-                  </div>
-                </button>
-              )
-            })}
-          </nav>
-        </div>
-
-        <div className="rounded-xl border border-border/80 bg-gradient-to-br from-primary/5 via-primary/10 to-transparent p-3.5 shadow-sm">
-          <div className="flex items-center gap-2 mb-1.5">
-            <Sparkles className="h-4 w-4 text-primary" />
-            <span className="text-xs font-semibold text-foreground">
-              Real-Time Sync
-            </span>
-          </div>
-          <p className="text-[11px] text-muted-foreground leading-relaxed">
-            Connected to Rikminoodt Cloud. Changes sync across all endpoints.
-          </p>
-        </div>
-      </div>
-
-      {/* Footer Profile */}
-      <div className="p-3 border-t border-border/60 bg-muted/20">
-        <div className="flex items-center justify-between rounded-lg p-2 hover:bg-muted/60 transition-colors">
-          <div className="flex items-center gap-2.5">
-            <Avatar className="h-9 w-9 border border-border">
-              <AvatarImage src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80" />
-              <AvatarFallback className="bg-primary/10 text-primary font-semibold text-xs">
-                RM
-              </AvatarFallback>
-            </Avatar>
-            <div className="flex flex-col text-left">
-              <span className="text-xs font-semibold text-foreground">
-                Rikminoodt Executive
-              </span>
-              <span className="text-[11px] text-muted-foreground">
-                admin@rikminoodt.com
-              </span>
-            </div>
-          </div>
-          <Button
-            variant="ghost"
-            size="icon"
-            className="h-8 w-8 text-muted-foreground hover:text-destructive cursor-pointer"
-            onClick={() => {
-              toast.info("Logged out successfully", {
-                description: "Session closed securely.",
-              })
-            }}
+        {/* Settings item */}
+        <div className="flex flex-col gap-2">
+          <button
+            onClick={() => handleItemClick("settings", "Settings")}
+            className={`w-full h-12 px-4 py-3 rounded-lg flex items-center gap-3 transition-colors text-base font-semibold cursor-pointer ${
+              currentTab === "settings"
+                ? "bg-[#E88DA0] text-white"
+                : "text-neutral-500 hover:bg-slate-50 hover:text-gray-900"
+            }`}
           >
-            <LogOut className="h-4 w-4" />
-          </Button>
+            <Settings className="w-5 h-5 shrink-0 text-neutral-500" />
+            <span>Settings</span>
+          </button>
         </div>
+      </div>
+
+      {/* Bottom Section: Logout Button */}
+      <div className="pt-4">
+        <button
+          onClick={handleLogout}
+          className="w-full h-12 px-4 py-3 bg-[#F43F5E] hover:bg-[#E11D48] text-white rounded-lg flex items-center gap-3 text-base font-semibold transition-all cursor-pointer shadow-xs active:scale-[0.99]"
+        >
+          <LogOut className="w-5 h-5 shrink-0 text-white" />
+          <span>Logout</span>
+        </button>
       </div>
     </aside>
   )
