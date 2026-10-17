@@ -8,6 +8,8 @@ import { useDebounce } from "@/hooks/use-debounce"
 import { useRouter } from "next/navigation"
 import { toast } from "sonner"
 
+import { slugifyUsername } from "../api"
+
 interface UsersTableProps {
   onSelectUser?: (userId: string) => void
 }
@@ -29,10 +31,11 @@ export function UsersTable({ onSelectUser }: UsersTableProps) {
 
   const handleViewUser = (user: UserItem) => {
     toast.info(`Opening details for ${user.name}`)
+    const userSlug = slugifyUsername(user.name)
     if (onSelectUser) {
-      onSelectUser(user.id)
+      onSelectUser(userSlug)
     } else {
-      router.push(`/users/${user.id}`)
+      router.push(`/user-management/${userSlug}`)
     }
   }
 

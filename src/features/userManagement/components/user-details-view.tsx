@@ -4,6 +4,7 @@ import * as React from "react"
 import { BookOpen, Printer, ChevronDown, ArrowLeft } from "lucide-react"
 import { useUser } from "../hooks"
 import { UserItem } from "../types"
+import { useRouter } from "next/navigation"
 import { toast } from "sonner"
 
 interface UserDetailsViewProps {
@@ -12,6 +13,7 @@ interface UserDetailsViewProps {
 }
 
 export function UserDetailsView({ userId = "usr-1", onBack }: UserDetailsViewProps) {
+  const router = useRouter()
   const { data: user, isLoading } = useUser(userId)
 
   const activeUser: UserItem = user || {
@@ -67,15 +69,13 @@ export function UserDetailsView({ userId = "usr-1", onBack }: UserDetailsViewPro
     <div className="flex flex-col gap-6 w-full font-['Nunito_Sans']">
       {/* Title & Subtitle + Back Navigation */}
       <div className="flex flex-col justify-start items-start gap-1">
-        {onBack && (
-          <button
-            onClick={onBack}
-            className="flex items-center gap-1.5 text-xs text-[#E88DA0] hover:text-[#DE778C] font-semibold mb-1 cursor-pointer transition-colors"
-          >
-            <ArrowLeft className="w-3.5 h-3.5" />
-            <span>Back to Users Management</span>
-          </button>
-        )}
+        <button
+          onClick={() => (onBack ? onBack() : router.push("/user-management"))}
+          className="flex items-center gap-1.5 text-xs text-[#E88DA0] hover:text-[#DE778C] font-semibold mb-1 cursor-pointer transition-colors"
+        >
+          <ArrowLeft className="w-3.5 h-3.5" />
+          <span>Back to User Management</span>
+        </button>
         <h1 className="text-gray-900 text-2xl font-bold tracking-tight">
           User Details
         </h1>

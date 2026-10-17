@@ -180,6 +180,25 @@ export const mockUsers: UserItem[] = [
   },
 ]
 
+export function slugifyUsername(name: string): string {
+  return name.toLowerCase().trim().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "")
+}
+
+export function findUserBySlugOrId(identifier: string): UserItem {
+  const decoded = decodeURIComponent(identifier).toLowerCase()
+  const found = mockUsers.find((u) => {
+    const slug = slugifyUsername(u.name)
+    const normalizedName = u.name.toLowerCase()
+    return (
+      u.id.toLowerCase() === decoded ||
+      slug === decoded ||
+      normalizedName === decoded ||
+      normalizedName.replace(/\s+/g, "-") === decoded
+    )
+  })
+  return found || mockUsers[0]
+}
+
 export const usersApi = {
   async getUsers(filter?: UsersFilter): Promise<UsersResponse> {
     try {
@@ -204,13 +223,12 @@ export const usersApi = {
     }
   },
 
-  async getUserById(id: string): Promise<UserItem | undefined> {
+  async getUserById(identifier: string): Promise<UserItem | undefined> {
     try {
-      const { data } = await api.get<UserItem>(`/users/${id}`)
+      const { data } = await api.get<UserItem>(`/users/${identifier}`)
       return data
     } catch {
-      const found = mockUsers.find((u) => u.id === id)
-      return found || mockUsers[0]
+      return findUserBySlugOrId(identifier)
     }
   },
 }

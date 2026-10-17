@@ -9,20 +9,21 @@ import {
   LogOut,
 } from "lucide-react"
 import { useUIStore } from "@/store/ui.store"
-import { toast } from "sonner"
-
+import { usePathname, useRouter } from "next/navigation"
 import Image from "next/image"
+import { toast } from "sonner"
 
 export interface NavItem {
   title: string
+  href: string
   key: string
   icon: React.ComponentType<{ className?: string }>
 }
 
 const mainNavItems: NavItem[] = [
-  { title: "Dashboard", key: "dashboard", icon: LayoutDashboard },
-  { title: "User Management", key: "users", icon: Users },
-  { title: "Orders Management", key: "orders", icon: ShoppingCart },
+  { title: "Dashboard", href: "/", key: "dashboard", icon: LayoutDashboard },
+  { title: "User Management", href: "/user-management", key: "users", icon: Users },
+  { title: "Orders Management", href: "/orders-management", key: "orders", icon: ShoppingCart },
 ]
 
 interface SidebarProps {
@@ -30,15 +31,14 @@ interface SidebarProps {
 }
 
 export function SharedSidebar({ onCloseMobile }: SidebarProps) {
-  const currentTab = useUIStore((s) => s.currentTab)
+  const pathname = usePathname()
+  const router = useRouter()
   const setCurrentTab = useUIStore((s) => s.setCurrentTab)
 
-  const handleItemClick = (key: string, title: string) => {
-    setCurrentTab(key)
+  const handleItemClick = (item: NavItem) => {
+    setCurrentTab(item.key)
     if (onCloseMobile) onCloseMobile()
-    toast.info(`Navigated to ${title}`, {
-      description: `Viewing ${title} section`,
-    })
+    router.push(item.href)
   }
 
   const handleLogout = () => {
@@ -59,7 +59,8 @@ export function SharedSidebar({ onCloseMobile }: SidebarProps) {
             width={208}
             height={57}
             priority
-            className="h-10 w-auto object-contain"
+            className="h-10 w-auto object-contain cursor-pointer"
+            onClick={() => router.push("/")}
           />
         </div>
 
@@ -68,30 +69,33 @@ export function SharedSidebar({ onCloseMobile }: SidebarProps) {
           {mainNavItems.map((item) => {
             const Icon = item.icon
             const isActive =
-              currentTab === item.key ||
-              (currentTab === "overview" && item.key === "dashboard")
+              item.href === "/"
+                ? pathname === "/"
+                : pathname.startsWith(item.href)
 
             return (
               <button
                 key={item.key}
-                onClick={() => handleItemClick(item.key, item.title)}
+                onClick={() => handleItemClick(item)}
                 style={
                   isActive
                     ? {
-                      borderRadius: "8px",
-                      borderLeft: "2px solid #E88DA0",
-                      background: "#E88DA0",
-                    }
+                        borderRadius: "8px",
+                        borderLeft: "2px solid #E88DA0",
+                        background: "#E88DA0",
+                      }
                     : undefined
                 }
-                className={`w-full h-12 px-4 py-3 rounded-lg flex items-center gap-3 transition-colors text-base font-semibold cursor-pointer ${isActive
+                className={`w-full h-12 px-4 py-3 rounded-lg flex items-center gap-3 transition-colors text-base font-semibold cursor-pointer ${
+                  isActive
                     ? "text-white shadow-xs"
                     : "text-neutral-500 hover:bg-slate-50 hover:text-gray-900"
-                  }`}
+                }`}
               >
                 <Icon
-                  className={`w-5 h-5 shrink-0 ${isActive ? "text-white" : "text-neutral-500"
-                    }`}
+                  className={`w-5 h-5 shrink-0 ${
+                    isActive ? "text-white" : "text-neutral-500"
+                  }`}
                 />
                 <span className="truncate">{item.title}</span>
               </button>
@@ -105,11 +109,15 @@ export function SharedSidebar({ onCloseMobile }: SidebarProps) {
         {/* Settings item */}
         <div className="flex flex-col gap-2">
           <button
-            onClick={() => handleItemClick("settings", "Settings")}
-            className={`w-full h-12 px-4 py-3 rounded-lg flex items-center gap-3 transition-colors text-base font-semibold cursor-pointer ${currentTab === "settings"
+            onClick={() => {
+              if (onCloseMobile) onCloseMobile()
+              router.push("/settings")
+            }}
+            className={`w-full h-12 px-4 py-3 rounded-lg flex items-center gap-3 transition-colors text-base font-semibold cursor-pointer ${
+              pathname.startsWith("/settings")
                 ? "bg-[#E88DA0] text-white"
                 : "text-neutral-500 hover:bg-slate-50 hover:text-gray-900"
-              }`}
+            }`}
           >
             <Settings className="w-5 h-5 shrink-0 text-neutral-500" />
             <span>Settings</span>
