@@ -5,6 +5,7 @@ import {
   LayoutDashboard,
   Users,
   ShoppingCart,
+  Star,
   Settings,
   LogOut,
 } from "lucide-react"
@@ -24,6 +25,7 @@ const mainNavItems: NavItem[] = [
   { title: "Dashboard", href: "/", key: "dashboard", icon: LayoutDashboard },
   { title: "User Management", href: "/user-management", key: "users", icon: Users },
   { title: "Orders Management", href: "/orders-management", key: "orders", icon: ShoppingCart },
+  { title: "Review Management", href: "/review-management", key: "reviews", icon: Star },
 ]
 
 interface SidebarProps {
