@@ -6,7 +6,7 @@ import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { ArrowLeft, Loader2 } from "lucide-react"
 import { toast } from "sonner"
-import api from "@/lib/api"
+import { authApi } from "@/features/auth/api"
 
 export function ForgotPassword() {
   const router = useRouter()
@@ -23,14 +23,17 @@ export function ForgotPassword() {
 
     try {
       setIsLoading(true)
-      // Call api if available, otherwise graceful fallback
-      await api.post("/auth/forgot-password", { email }).catch(() => null)
-
-      toast.success("Verification code sent to your email!")
-      router.push(`/auth/otp-verify?email=${encodeURIComponent(email)}`)
-    } catch (err: unknown) {
+      const res = await authApi.forgetPassword({ email: email.trim() })
+      toast.success(res.message || "Verification code sent to your email!")
+      router.push(`/auth/otp-verify?email=${encodeURIComponent(email.trim())}`)
+    } catch (err: any) {
       console.error("Forgot password error:", err)
-      toast.error("Failed to send reset code. Please try again.")
+      const errMsg =
+        err?.response?.data?.message ||
+        err?.response?.data?.errorSources?.[0]?.message ||
+        err?.message ||
+        "Failed to send reset code. Please verify your email."
+      toast.error(errMsg)
     } finally {
       setIsLoading(false)
     }
@@ -85,7 +88,7 @@ export function ForgotPassword() {
                   Forgot Password?
                 </h1>
                 <p className="self-stretch text-center text-black text-base font-normal font-['Nunito_Sans']">
-                  Enter your email and we&apos;ll send you a code to reset your password
+                  Enter your email and we&apos;ll send you a 6-digit code to reset your password.
                 </p>
               </div>
 

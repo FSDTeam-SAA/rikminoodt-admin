@@ -3,18 +3,30 @@
 import * as React from "react"
 import Image from "next/image"
 import Link from "next/link"
-import { useRouter } from "next/navigation"
+import { useRouter, useSearchParams } from "next/navigation"
 import { ArrowLeft, Eye, EyeOff, Loader2 } from "lucide-react"
 import { toast } from "sonner"
 import { authApi } from "@/features/auth/api"
 
 export function Login() {
     const router = useRouter()
+    const searchParams = useSearchParams()
+    const callbackUrl = searchParams.get("callbackUrl") || "/"
+
     const [email, setEmail] = React.useState("")
     const [password, setPassword] = React.useState("")
     const [showPassword, setShowPassword] = React.useState(false)
     const [rememberMe, setRememberMe] = React.useState(false)
     const [isLoading, setIsLoading] = React.useState(false)
+
+    // Pre-fill email if stored
+    React.useEffect(() => {
+        const savedEmail = localStorage.getItem("remembered_email")
+        if (savedEmail) {
+            setEmail(savedEmail)
+            setRememberMe(true)
+        }
+    }, [])
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
@@ -26,19 +38,27 @@ export function Login() {
 
         try {
             setIsLoading(true)
-            const res = await authApi
-                .loginWithCredentials({ email, password })
-                .catch(() => null)
+            const data = await authApi.login({
+                email: email.trim(),
+                password: password.trim(),
+            })
 
-            if (res?.error) {
-                toast.error(res.error || "Failed to sign in. Please verify your credentials.")
+            if (rememberMe) {
+                localStorage.setItem("remembered_email", email.trim())
             } else {
-                toast.success("Welcome back! Signing in...")
-                router.push("/")
+                localStorage.removeItem("remembered_email")
             }
-        } catch (err: unknown) {
+
+            toast.success(`Welcome back, ${data.user.name || "Admin"}!`)
+            router.push(callbackUrl)
+        } catch (err: any) {
             console.error("Login error:", err)
-            toast.error("An unexpected error occurred. Please try again.")
+            const errMsg =
+                err?.response?.data?.message ||
+                err?.response?.data?.errorSources?.[0]?.message ||
+                err?.message ||
+                "Failed to sign in. Please verify your credentials."
+            toast.error(errMsg)
         } finally {
             setIsLoading(false)
         }
@@ -71,7 +91,7 @@ export function Login() {
                             <ArrowLeft className="w-5 h-5 text-gray-900 transition-transform group-hover:-translate-x-1" />
                         </div>
                         <span className="text-gray-900 text-base font-normal font-['Nunito_Sans']">
-                            Back to website
+                            Back
                         </span>
                     </button>
 
@@ -94,7 +114,7 @@ export function Login() {
                                     Welcome back
                                 </h1>
                                 <p className="self-stretch text-center text-black text-base font-normal font-['Nunito_Sans']">
-                                    Please enter your email & password to access your account.
+                                    Please enter your admin email & password to access your dashboard.
                                 </p>
                             </div>
 
@@ -194,7 +214,6 @@ export function Login() {
                                 <span>Login</span>
                             )}
                         </button>
-
                     </form>
                 </div>
             </div>

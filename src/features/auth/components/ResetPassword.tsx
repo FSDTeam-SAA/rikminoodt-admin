@@ -6,13 +6,12 @@ import Link from "next/link"
 import { useRouter, useSearchParams } from "next/navigation"
 import { ArrowLeft, Eye, EyeOff, Loader2 } from "lucide-react"
 import { toast } from "sonner"
-import api from "@/lib/api"
+import { authApi } from "@/features/auth/api"
 
 export function ResetPassword() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const emailParam = searchParams.get("email") || ""
-  const codeParam = searchParams.get("code") || ""
 
   const [newPassword, setNewPassword] = React.useState("")
   const [confirmPassword, setConfirmPassword] = React.useState("")
@@ -22,6 +21,11 @@ export function ResetPassword() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+
+    if (!emailParam) {
+      toast.error("Email address is missing. Please start from the forgot password page.")
+      return
+    }
 
     if (!newPassword || !confirmPassword) {
       toast.error("Please fill in both password fields.")
@@ -40,19 +44,21 @@ export function ResetPassword() {
 
     try {
       setIsLoading(true)
-      await api
-        .post("/auth/reset-password", {
-          email: emailParam,
-          code: codeParam,
-          password: newPassword,
-        })
-        .catch(() => null)
+      const res = await authApi.resetPassword({
+        email: emailParam,
+        newPassword: newPassword,
+      })
 
-      toast.success("Password changed successfully! Please log in.")
+      toast.success(res.message || "Password reset successfully! Please log in.")
       router.push("/auth/login")
-    } catch (err: unknown) {
+    } catch (err: any) {
       console.error("Reset password error:", err)
-      toast.error("Failed to reset password. Please try again.")
+      const errMsg =
+        err?.response?.data?.message ||
+        err?.response?.data?.errorSources?.[0]?.message ||
+        err?.message ||
+        "Failed to reset password. Please try again."
+      toast.error(errMsg)
     } finally {
       setIsLoading(false)
     }

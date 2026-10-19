@@ -6,12 +6,12 @@ import Link from "next/link"
 import { useRouter, useSearchParams } from "next/navigation"
 import { ArrowLeft, Loader2 } from "lucide-react"
 import { toast } from "sonner"
-import api from "@/lib/api"
+import { authApi } from "@/features/auth/api"
 
 export function OtpVerify() {
   const router = useRouter()
   const searchParams = useSearchParams()
-  const emailParam = searchParams.get("email") || "you@gmail.com"
+  const emailParam = searchParams.get("email") || ""
 
   const [otp, setOtp] = React.useState<string[]>(["", "", "", "", "", ""])
   const [isLoading, setIsLoading] = React.useState(false)
@@ -81,12 +81,21 @@ export function OtpVerify() {
   }
 
   const handleResend = async () => {
+    if (!emailParam) {
+      toast.error("Email address missing. Please request a new code.")
+      return
+    }
+
     try {
       setIsResending(true)
-      await api.post("/auth/forgot-password", { email: emailParam }).catch(() => null)
+      await authApi.forgetPassword({ email: emailParam })
       toast.success("A new 6-digit code has been sent to your email!")
-    } catch {
-      toast.error("Failed to resend verification code.")
+    } catch (err: any) {
+      const errMsg =
+        err?.response?.data?.message ||
+        err?.message ||
+        "Failed to resend verification code."
+      toast.error(errMsg)
     } finally {
       setIsResending(false)
     }
@@ -101,17 +110,28 @@ export function OtpVerify() {
       return
     }
 
+    if (!emailParam) {
+      toast.error("Email address missing. Please request a new code.")
+      return
+    }
+
     try {
       setIsLoading(true)
-      await api
-        .post("/auth/verify-otp", { email: emailParam, otp: fullCode })
-        .catch(() => null)
+      const res = await authApi.verifyCode({
+        email: emailParam,
+        otp: fullCode,
+      })
 
-      toast.success("Email verified successfully!")
-      router.push(`/auth/reset-password?email=${encodeURIComponent(emailParam)}&code=${encodeURIComponent(fullCode)}`)
-    } catch (err: unknown) {
+      toast.success(res.message || "Email verified successfully!")
+      router.push(`/auth/reset-password?email=${encodeURIComponent(emailParam)}`)
+    } catch (err: any) {
       console.error("Verification error:", err)
-      toast.error("Invalid or expired verification code.")
+      const errMsg =
+        err?.response?.data?.message ||
+        err?.response?.data?.errorSources?.[0]?.message ||
+        err?.message ||
+        "Invalid or expired verification code."
+      toast.error(errMsg)
     } finally {
       setIsLoading(false)
     }
@@ -166,7 +186,7 @@ export function OtpVerify() {
                   Verify your email
                 </h1>
                 <p className="self-stretch text-center text-black text-base font-normal font-['Nunito_Sans']">
-                  we sent a 6-digit code to {emailParam}
+                  We sent a 6-digit code to <span className="font-semibold text-gray-900">{emailParam}</span>
                 </p>
               </div>
 

@@ -30,7 +30,7 @@ export default function Home() {
           {currentTab === "users" ? (
             <UserManagementView />
           ) : (
-            <>
+            <React.Suspense fallback={<div className="h-96 w-full animate-pulse bg-slate-100 rounded-lg" />}>
               {/* Dashboard Overview Greeting Section */}
               <div className="flex flex-col justify-start items-start gap-1">
                 <h1 className="text-gray-900 text-2xl font-bold font-['Nunito_Sans'] tracking-tight">
@@ -46,7 +46,7 @@ export default function Home() {
 
               {/* Overview Bar Chart: Printing Revenue vs Generation Revenue */}
               <RevenueChart />
-            </>
+            </React.Suspense>
           )}
         </main>
       </div>

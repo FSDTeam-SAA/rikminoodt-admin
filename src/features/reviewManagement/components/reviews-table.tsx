@@ -46,7 +46,7 @@ export function ReviewsTable() {
   const deleteReviewMutation = useDeleteReview()
 
   const reviews = data?.reviews || []
-  const totalResults = data?.total || 120
+  const totalResults = data?.total ?? 0
 
   const handleOpenReview = (review: ReviewItem) => {
     setSelectedReview(review)
@@ -300,77 +300,39 @@ export function ReviewsTable() {
       {/* Pagination Controls */}
       <div className="w-full flex flex-col sm:flex-row items-center justify-between gap-4 py-2">
         <div className="text-neutral-400 text-base font-normal">
-          Showing 1 to {reviews.length} of {totalResults} results
+          Showing {reviews.length > 0 ? (currentPage - 1) * 10 + 1 : 0} to{" "}
+          {Math.min(currentPage * 10, totalResults)} of {totalResults} results
         </div>
 
         <div className="flex items-center gap-2">
           {/* Previous Page */}
           <button
             onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
-            disabled={currentPage === 1}
+            disabled={currentPage <= 1}
             className="w-10 h-10 rounded-sm border border-neutral-300 hover:border-neutral-400 bg-white flex items-center justify-center text-neutral-400 disabled:opacity-50 disabled:cursor-not-allowed transition-colors cursor-pointer"
             aria-label="Previous page"
           >
             <ChevronLeft className="w-5 h-5" />
           </button>
 
-          {/* Page 1 */}
-          <button
-            onClick={() => setCurrentPage(1)}
-            className={`w-10 h-10 rounded-sm flex items-center justify-center text-base font-normal transition-colors cursor-pointer ${
-              currentPage === 1
-                ? "bg-[#E88DA0] text-white font-semibold shadow-2xs"
-                : "border border-neutral-300 text-neutral-400 bg-white hover:border-neutral-400"
-            }`}
-          >
-            1
-          </button>
-
-          {/* Page 2 */}
-          <button
-            onClick={() => setCurrentPage(2)}
-            className={`w-10 h-10 rounded-sm flex items-center justify-center text-base font-normal transition-colors cursor-pointer ${
-              currentPage === 2
-                ? "bg-[#E88DA0] text-white font-semibold shadow-2xs"
-                : "border border-neutral-300 text-neutral-400 bg-white hover:border-neutral-400"
-            }`}
-          >
-            2
-          </button>
-
-          {/* Page 3 */}
-          <button
-            onClick={() => setCurrentPage(3)}
-            className={`w-10 h-10 rounded-sm flex items-center justify-center text-base font-normal transition-colors cursor-pointer ${
-              currentPage === 3
-                ? "bg-[#E88DA0] text-white font-semibold shadow-2xs"
-                : "border border-neutral-300 text-neutral-400 bg-white hover:border-neutral-400"
-            }`}
-          >
-            3
-          </button>
-
-          {/* Ellipsis */}
-          <div className="w-10 h-10 rounded-sm border border-neutral-300 bg-white flex items-center justify-center text-neutral-400 select-none">
-            ...
-          </div>
-
-          {/* Page 12 */}
-          <button
-            onClick={() => setCurrentPage(12)}
-            className={`w-10 h-10 rounded-sm flex items-center justify-center text-base font-normal transition-colors cursor-pointer ${
-              currentPage === 12
-                ? "bg-[#E88DA0] text-white font-semibold shadow-2xs"
-                : "border border-neutral-300 text-neutral-400 bg-white hover:border-neutral-400"
-            }`}
-          >
-            12
-          </button>
+          {Array.from({ length: Math.min(data?.totalPages || 1, 5) }, (_, i) => i + 1).map((pg) => (
+            <button
+              key={pg}
+              onClick={() => setCurrentPage(pg)}
+              className={`w-10 h-10 rounded-sm flex items-center justify-center text-base font-normal transition-colors cursor-pointer ${
+                currentPage === pg
+                  ? "bg-[#E88DA0] text-white font-semibold shadow-2xs"
+                  : "border border-neutral-300 text-neutral-400 bg-white hover:border-neutral-400"
+              }`}
+            >
+              {pg}
+            </button>
+          ))}
 
           {/* Next Page */}
           <button
-            onClick={() => setCurrentPage((p) => Math.min(12, p + 1))}
-            disabled={currentPage === 12}
+            onClick={() => setCurrentPage((p) => Math.min(data?.totalPages || 1, p + 1))}
+            disabled={currentPage >= (data?.totalPages || 1)}
             className="w-10 h-10 rounded-sm border border-neutral-300 hover:border-neutral-400 bg-white flex items-center justify-center text-neutral-400 disabled:opacity-50 disabled:cursor-not-allowed transition-colors cursor-pointer"
             aria-label="Next page"
           >

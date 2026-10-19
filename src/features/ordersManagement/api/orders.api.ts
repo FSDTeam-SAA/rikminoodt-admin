@@ -2,10 +2,10 @@ import api from "@/lib/api"
 import { OrderItem, OrdersFilter, OrdersResponse, OrderMetrics } from "../types"
 
 export const initialOrderMetrics: OrderMetrics = {
-  totalOrders: "1,450",
-  totalPendingOrders: "1,200",
-  totalBooksDelivered: "1,200",
-  printingRevenue: "$ 24,650",
+  totalOrders: "0",
+  totalPendingOrders: "0",
+  totalBooksDelivered: "0",
+  printingRevenue: "$ 0",
 }
 
 export const mockOrders: OrderItem[] = [
@@ -72,132 +72,6 @@ export const mockOrders: OrderItem[] = [
       country: "United States",
     },
   },
-  {
-    id: "ORD-263",
-    customerName: "Patel Aisha",
-    customerAvatar: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=100&auto=format&fit=crop&q=80",
-    email: "lily.t@live.com",
-    bookTitle: "Mindfulness and...",
-    bookCover: "/books/ben.jpg",
-    booksPrinted: "25 Copy",
-    amount: "$850.00",
-    status: "Pending",
-    orderDate: "8/28/2027",
-    paymentMethod: "Credit Card (Mastercard 8812)",
-    copies: 25,
-    shippingAddress: {
-      street: "450 Serenity Way",
-      city: "Austin",
-      state: "TX",
-      zip: "78701",
-      country: "United States",
-    },
-  },
-  {
-    id: "ORD-264",
-    customerName: "Chen Yi",
-    customerAvatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=100&auto=format&fit=crop&q=80",
-    email: "lily.t@live.com",
-    bookTitle: "Exploring the Cos...",
-    bookCover: "/books/mia.jpg",
-    booksPrinted: "12 Copy",
-    amount: "$400.00",
-    status: "Delivered",
-    orderDate: "8/29/2027",
-    paymentMethod: "Credit Card (Visa 1099)",
-    copies: 12,
-    shippingAddress: {
-      street: "101 Galaxy Boulevard",
-      city: "Seattle",
-      state: "WA",
-      zip: "98101",
-      country: "United States",
-    },
-  },
-  {
-    id: "ORD-261",
-    customerName: "Jones Sarah",
-    customerAvatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&auto=format&fit=crop&q=80",
-    email: "lily.t@live.com",
-    bookTitle: "The Art of Cooking",
-    bookCover: "/books/noah.jpg",
-    booksPrinted: "20 Copy",
-    amount: "$1,200.00",
-    status: "Delivered",
-    orderDate: "8/30/2027",
-    paymentMethod: "Stripe",
-    copies: 20,
-    shippingAddress: {
-      street: "14 Culinary Ave",
-      city: "Chicago",
-      state: "IL",
-      zip: "60601",
-      country: "United States",
-    },
-  },
-  {
-    id: "ORD-266",
-    customerName: "Nguyen Tuan",
-    customerAvatar: "https://images.unsplash.com/photo-1522075469751-3a6694fb2f61?w=100&auto=format&fit=crop&q=80",
-    email: "lily.t@live.com",
-    bookTitle: "Travel Around the...",
-    bookCover: "/books/ben.jpg",
-    booksPrinted: "10 Copy",
-    amount: "$500.00",
-    status: "Pending",
-    orderDate: "9/01/2027",
-    paymentMethod: "Credit Card (Amex 3004)",
-    copies: 10,
-    shippingAddress: {
-      street: "55 Voyager Drive",
-      city: "Denver",
-      state: "CO",
-      zip: "80202",
-      country: "United States",
-    },
-  },
-  {
-    id: "ORD-267",
-    customerName: "David Miller",
-    customerAvatar: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=100&auto=format&fit=crop&q=80",
-    email: "david.m@live.com",
-    bookTitle: "Secrets of the Deep",
-    bookCover: "/books/mia.jpg",
-    booksPrinted: "15 Copy",
-    amount: "$780.00",
-    status: "Shipped",
-    orderDate: "9/02/2027",
-    paymentMethod: "Credit Card (Visa 7721)",
-    copies: 15,
-    shippingAddress: {
-      street: "220 Harbor View",
-      city: "San Diego",
-      state: "CA",
-      zip: "92101",
-      country: "United States",
-    },
-  },
-  {
-    id: "ORD-268",
-    customerName: "Emma Watson",
-    customerAvatar: "https://images.unsplash.com/photo-1517841905240-472988babdf9?w=100&auto=format&fit=crop&q=80",
-    email: "emma.w@live.com",
-    bookTitle: "Magical Fairy Tales",
-    bookCover: "/books/noah.jpg",
-    booksPrinted: "8 Copy",
-    amount: "$420.00",
-    status: "Printing",
-    orderDate: "9/03/2027",
-    paymentMethod: "PayPal (emma.w@live.com)",
-    copies: 8,
-    shippingAddress: {
-      street: "78 Enchanted Lane",
-      city: "Boston",
-      state: "MA",
-      zip: "02108",
-      country: "United States",
-    },
-  },
 ]
 
 export function slugifyOrderId(id: string): string {
@@ -212,51 +86,211 @@ export function findOrderById(identifier: string): OrderItem {
   return found || mockOrders[0]
 }
 
+function mapBackendStatusToFrontend(
+  status?: string
+): OrderItem["status"] {
+  switch ((status || "").toUpperCase()) {
+    case "PAYMENT_PENDING":
+    case "PENDING":
+      return "Pending"
+    case "PRINTING":
+      return "Printing"
+    case "SHIPPED":
+      return "Shipped"
+    case "DELIVERED":
+      return "Delivered"
+    default:
+      return "Pending"
+  }
+}
+
+function mapFrontendStatusToBackend(status?: string): string | undefined {
+  switch (status) {
+    case "Pending":
+      return "PAYMENT_PENDING"
+    case "Printing":
+      return "PRINTING"
+    case "Shipped":
+      return "SHIPPED"
+    case "Delivered":
+      return "DELIVERED"
+    default:
+      return undefined
+  }
+}
+
 export const ordersApi = {
+  /**
+   * Fetch 4 order summary cards from backend
+   * Endpoint: GET /admin/orders/cards
+   */
+  async getOrderCards(): Promise<OrderMetrics> {
+    try {
+      const res = await api.get<any>("/admin/orders/cards")
+      const payload = res.data?.data
+      if (payload) {
+        return {
+          totalOrders: (payload.totalOrder ?? 0).toLocaleString(),
+          totalPendingOrders: (payload.totalPendingOrder ?? 0).toLocaleString(),
+          totalBooksDelivered: (payload.totalBooksDelivered ?? 0).toLocaleString(),
+          printingRevenue: `$ ${(payload.printingRevenue ?? 0).toLocaleString()}`,
+        }
+      }
+      return initialOrderMetrics
+    } catch (err) {
+      console.error("Failed to fetch order cards from backend:", err)
+      return initialOrderMetrics
+    }
+  },
+
+  /**
+   * Fetch paginated orders from backend
+   * Endpoint: GET /admin/orders
+   */
   async getOrders(filter?: OrdersFilter): Promise<OrdersResponse> {
     try {
-      const { data } = await api.get<OrdersResponse>("/orders", { params: filter })
-      return data
-    } catch {
-      let list = [...mockOrders]
+      const page = filter?.page || 1
+      const limit = filter?.limit || 9
+      const status = mapFrontendStatusToBackend(filter?.status)
+      const search = filter?.search
 
-      if (filter?.status && filter.status !== "All") {
-        list = list.filter((o) => o.status.toLowerCase() === filter.status?.toLowerCase())
+      const [ordersRes, metrics] = await Promise.all([
+        api.get<any>("/admin/orders", {
+          params: {
+            page,
+            limit,
+            status,
+            search: search || undefined,
+          },
+        }),
+        ordersApi.getOrderCards(),
+      ])
+
+      const rawRows = ordersRes.data?.data?.rows || ordersRes.data?.rows || []
+      const meta = ordersRes.data?.meta || ordersRes.data?.data?.meta
+
+      if (rawRows.length > 0) {
+        const orders: OrderItem[] = rawRows.map((o: any) => ({
+          id: o._id ? `ORD-${o._id.toString().slice(-4).toUpperCase()}` : "ORD-000",
+          customerName: o.user?.name || "Customer",
+          customerAvatar:
+            o.user?.profileImage ||
+            "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80",
+          email: o.user?.email || "customer@example.com",
+          bookTitle: o.book?.theme ? o.book.theme.replace(/_/g, " ") : "Custom Storybook",
+          bookCover: o.book?.coverImageUrl || "/books/ben.jpg",
+          booksPrinted: `${o.quantity || 1} Copy`,
+          amount: `$${(o.totalAmount || (o.quantity * o.pricePerCopy) || 0).toFixed(2)}`,
+          status: mapBackendStatusToFrontend(o.status),
+          orderDate: o.createdAt ? new Date(o.createdAt).toLocaleDateString("en-US") : "N/A",
+          copies: o.quantity || 1,
+          shippingAddress: {
+            street: o.shippingAddress?.line1 || "742 Evergreen Terrace",
+            city: o.shippingAddress?.city || "Springfield",
+            state: o.shippingAddress?.state || "OR",
+            zip: o.shippingAddress?.zip || "97477",
+            country: o.shippingAddress?.country || "United States",
+          },
+        }))
+
+        return {
+          orders,
+          total: meta?.totalData ?? orders.length,
+          page: meta?.currentPage ?? page,
+          totalPages: Math.max(meta?.totalPages ?? 1, 1),
+          metrics,
+        }
       }
 
-      if (filter?.search) {
-        const q = filter.search.toLowerCase()
-        list = list.filter(
-          (o) =>
-            o.id.toLowerCase().includes(q) ||
-            o.customerName.toLowerCase().includes(q) ||
-            o.email.toLowerCase().includes(q) ||
-            o.bookTitle.toLowerCase().includes(q)
-        )
-      }
-
+      // If backend has 0 orders in database, return empty array with real cards metrics
       return {
-        orders: list,
-        total: 120,
-        page: filter?.page || 1,
-        totalPages: 17,
-        metrics: initialOrderMetrics,
+        orders: [],
+        total: 0,
+        page,
+        totalPages: 1,
+        metrics,
+      }
+    } catch (err) {
+      console.error("Failed to fetch orders from backend:", err)
+      const metrics = await ordersApi.getOrderCards().catch(() => initialOrderMetrics)
+      return {
+        orders: [],
+        total: 0,
+        page: 1,
+        totalPages: 1,
+        metrics,
       }
     }
   },
 
+  /**
+   * Fetch single order detail
+   * Endpoint: GET /admin/orders/:id
+   */
   async getOrderById(identifier: string): Promise<OrderItem> {
     try {
-      const { data } = await api.get<OrderItem>(`/orders/${identifier}`)
-      return data
-    } catch {
+      const isObjectId = /^[0-9a-fA-F]{24}$/.test(identifier)
+      if (isObjectId) {
+        const res = await api.get<any>(`/admin/orders/${identifier}`)
+        const o = res.data?.data
+        if (o) {
+          return {
+            id: o._id ? `ORD-${o._id.toString().slice(-4).toUpperCase()}` : identifier,
+            customerName: o.user?.name || "Customer",
+            customerAvatar:
+              o.user?.profileImage ||
+              "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80",
+            email: o.user?.email || "customer@example.com",
+            bookTitle: o.book?.theme ? o.book.theme.replace(/_/g, " ") : "Custom Storybook",
+            bookCover: o.book?.coverImageUrl || "/books/ben.jpg",
+            booksPrinted: `${o.quantity || 1} Copy`,
+            amount: `$${(o.totalAmount || (o.quantity * o.pricePerCopy) || 0).toFixed(2)}`,
+            status: mapBackendStatusToFrontend(o.status),
+            orderDate: o.createdAt ? new Date(o.createdAt).toLocaleDateString("en-US") : "N/A",
+            paymentMethod: "Credit Card (Stripe)",
+            copies: o.quantity || 1,
+            shippingAddress: {
+              street: o.shippingAddress?.line1 || "N/A",
+              city: o.shippingAddress?.city || "N/A",
+              state: o.shippingAddress?.state || "N/A",
+              zip: o.shippingAddress?.zip || "N/A",
+              country: o.shippingAddress?.country || "N/A",
+            },
+          }
+        }
+      }
       return findOrderById(identifier)
+    } catch (err) {
+      console.error(`Failed to fetch order ${identifier}:`, err)
+      return findOrderById(identifier)
+    }
+  },
+
+  /**
+   * Update order tracking status
+   * Endpoint: PATCH /admin/orders/:id/status
+   */
+  async updateOrderStatus(
+    orderId: string,
+    status: OrderItem["status"]
+  ): Promise<boolean> {
+    try {
+      const backendStatus = mapFrontendStatusToBackend(status)
+      if (backendStatus) {
+        await api.patch(`/admin/orders/${orderId}/status`, {
+          status: backendStatus,
+        })
+      }
+      return true
+    } catch (err) {
+      console.error("Failed to update order status on backend:", err)
+      throw err
     }
   },
 
   async deleteOrder(id: string): Promise<boolean> {
     try {
-      await api.delete(`/orders/${id}`)
+      await api.delete(`/admin/orders/${id}`)
       return true
     } catch {
       return true

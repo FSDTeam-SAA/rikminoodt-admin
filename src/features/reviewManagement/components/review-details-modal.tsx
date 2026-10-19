@@ -88,11 +88,10 @@ export function ReviewDetailsModal({
         {[1, 2, 3, 4, 5].map((star) => (
           <Star
             key={star}
-            className={`w-4 h-4 ${
-              star <= rating
-                ? "text-amber-400 fill-amber-400"
-                : "text-slate-200"
-            }`}
+            className={`w-4 h-4 ${star <= rating
+              ? "text-amber-400 fill-amber-400"
+              : "text-slate-200"
+              }`}
           />
         ))}
         <span className="ml-1 text-sm font-bold text-slate-700">
@@ -190,6 +189,22 @@ export function ReviewDetailsModal({
             </div>
           </div>
 
+          {/* Customer Uploaded Photo */}
+          {review.photoUrl && (
+            <div className="space-y-2">
+              <label className="text-xs font-bold text-slate-400 uppercase tracking-wider">
+                Attached Photo
+              </label>
+              <div className="rounded-xl overflow-hidden border border-slate-200 bg-slate-50 max-h-60 flex items-center justify-center">
+                <img
+                  src={review.photoUrl}
+                  alt="Review attachment"
+                  className="max-h-60 w-auto object-contain rounded-xl"
+                />
+              </div>
+            </div>
+          )}
+
           {/* Status Controls */}
           <div className="space-y-2">
             <label className="text-xs font-bold text-slate-400 uppercase tracking-wider">
@@ -199,11 +214,10 @@ export function ReviewDetailsModal({
               <button
                 type="button"
                 onClick={() => handleStatusChange("Published")}
-                className={`px-3 py-1.5 rounded-lg text-sm font-semibold transition-all flex items-center gap-1.5 cursor-pointer ${
-                  review.status === "Published"
-                    ? "bg-emerald-600 text-white shadow-xs"
-                    : "bg-emerald-50 text-emerald-600 hover:bg-emerald-100 border border-emerald-200"
-                }`}
+                className={`px-3 py-1.5 rounded-lg text-sm font-semibold transition-all flex items-center gap-1.5 cursor-pointer ${review.status === "Published"
+                  ? "bg-emerald-600 text-white shadow-xs"
+                  : "bg-emerald-50 text-emerald-600 hover:bg-emerald-100 border border-emerald-200"
+                  }`}
               >
                 <CheckCircle2 className="w-4 h-4" />
                 Published
@@ -212,11 +226,10 @@ export function ReviewDetailsModal({
               <button
                 type="button"
                 onClick={() => handleStatusChange("Pending")}
-                className={`px-3 py-1.5 rounded-lg text-sm font-semibold transition-all flex items-center gap-1.5 cursor-pointer ${
-                  review.status === "Pending"
-                    ? "bg-amber-500 text-white shadow-xs"
-                    : "bg-amber-50 text-amber-600 hover:bg-amber-100 border border-amber-200"
-                }`}
+                className={`px-3 py-1.5 rounded-lg text-sm font-semibold transition-all flex items-center gap-1.5 cursor-pointer ${review.status === "Pending"
+                  ? "bg-amber-500 text-white shadow-xs"
+                  : "bg-amber-50 text-amber-600 hover:bg-amber-100 border border-amber-200"
+                  }`}
               >
                 <Clock className="w-4 h-4" />
                 Pending
@@ -225,11 +238,10 @@ export function ReviewDetailsModal({
               <button
                 type="button"
                 onClick={() => handleStatusChange("Flagged")}
-                className={`px-3 py-1.5 rounded-lg text-sm font-semibold transition-all flex items-center gap-1.5 cursor-pointer ${
-                  review.status === "Flagged"
-                    ? "bg-rose-600 text-white shadow-xs"
-                    : "bg-rose-50 text-rose-600 hover:bg-rose-100 border border-rose-200"
-                }`}
+                className={`px-3 py-1.5 rounded-lg text-sm font-semibold transition-all flex items-center gap-1.5 cursor-pointer ${review.status === "Flagged"
+                  ? "bg-rose-600 text-white shadow-xs"
+                  : "bg-rose-50 text-rose-600 hover:bg-rose-100 border border-rose-200"
+                  }`}
               >
                 <AlertTriangle className="w-4 h-4" />
                 Flagged

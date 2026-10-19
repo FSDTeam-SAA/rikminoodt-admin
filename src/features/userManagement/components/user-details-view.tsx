@@ -6,7 +6,7 @@ import { useUser } from "../hooks"
 import { UserItem } from "../types"
 import { useRouter } from "next/navigation"
 import { toast } from "sonner"
-import { findUserBySlugOrId } from "../api"
+import { findUserBySlugOrId, usersApi } from "../api"
 
 interface UserDetailsViewProps {
   userId?: string
@@ -51,10 +51,27 @@ export function UserDetailsView({ userId = "usr-1", onBack }: UserDetailsViewPro
     },
   ]
 
-  const toggleStatus = () => {
-    toast.success("User status updated", {
-      description: `${activeUser.name} status is now Active.`,
-    })
+  const [isUpdatingStatus, setIsUpdatingStatus] = React.useState(false)
+
+  const toggleStatus = async () => {
+    if (!activeUser?.id || isUpdatingStatus) return
+    const newBackendStatus = activeUser.status === "Active" ? "SUSPENDED" : "ACTIVE"
+    const newDisplayStatus = newBackendStatus === "ACTIVE" ? "Active" : "Inactive"
+
+    try {
+      setIsUpdatingStatus(true)
+      await usersApi.updateUserStatus(activeUser.id, newBackendStatus)
+      toast.success("User status updated", {
+        description: `${activeUser.name} status is now ${newDisplayStatus}.`,
+      })
+      if (user) {
+        user.status = newDisplayStatus
+      }
+    } catch (err: any) {
+      toast.error(err?.response?.data?.message || "Failed to update user status")
+    } finally {
+      setIsUpdatingStatus(false)
+    }
   }
 
   return (
@@ -100,7 +117,12 @@ export function UserDetailsView({ userId = "usr-1", onBack }: UserDetailsViewPro
             {/* Status Pill with Chevron */}
             <button
               onClick={toggleStatus}
-              className="px-2.5 py-1 bg-emerald-500/10 hover:bg-emerald-500/20 rounded-lg flex items-center gap-1 text-emerald-500 text-sm font-normal transition-colors cursor-pointer border border-emerald-500/20"
+              disabled={isUpdatingStatus}
+              className={`px-2.5 py-1 rounded-lg flex items-center gap-1 text-sm font-semibold transition-colors cursor-pointer border ${
+                activeUser.status === "Active"
+                  ? "bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-600 border-emerald-500/20"
+                  : "bg-rose-500/10 hover:bg-rose-500/20 text-rose-600 border-rose-500/20"
+              }`}
             >
               <span>{activeUser.status || "Active"}</span>
               <ChevronDown className="w-3.5 h-3.5" />

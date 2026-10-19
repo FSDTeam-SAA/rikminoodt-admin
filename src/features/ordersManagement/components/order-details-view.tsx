@@ -3,7 +3,7 @@
 import * as React from "react"
 import Link from "next/link"
 import { ChevronLeft, ChevronDown, Check, Save } from "lucide-react"
-import { useOrder } from "../hooks"
+import { useOrder, useUpdateOrderStatus } from "../hooks"
 import { OrderItem } from "../types"
 import { findOrderById } from "../api"
 import { toast } from "sonner"
@@ -48,15 +48,29 @@ export function OrderDetailsView({ orderId = "ORD-258" }: OrderDetailsViewProps)
     return () => document.removeEventListener("mousedown", handleClickOutside)
   }, [])
 
+  const updateStatusMutation = useUpdateOrderStatus()
+
   const handleStatusSelect = (status: OrderItem["status"]) => {
     setCurrentStatus(status)
     setDropdownOpen(false)
   }
 
   const handleUpdateStatus = () => {
-    toast.success("Order Status Updated", {
-      description: `Order ${activeOrder.id} status is now ${currentStatus}.`,
-    })
+    updateStatusMutation.mutate(
+      { orderId: activeOrder.id, status: currentStatus },
+      {
+        onSuccess: () => {
+          toast.success("Order Status Updated", {
+            description: `Order ${activeOrder.id} status is now ${currentStatus}.`,
+          })
+        },
+        onError: (err: any) => {
+          toast.error(
+            err?.response?.data?.message || "Failed to update order status on backend"
+          )
+        },
+      }
+    )
   }
 
   // 8 sample pages for Book Preview matching Figma snippet & screenshot

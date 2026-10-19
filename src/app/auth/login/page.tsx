@@ -1,3 +1,4 @@
+import * as React from "react"
 import { Login } from "@/features/auth/components/Login"
 import type { Metadata } from "next"
 
@@ -7,5 +8,9 @@ export const metadata: Metadata = {
 }
 
 export default function LoginPage() {
-  return <Login />
+  return (
+    <React.Suspense fallback={<div className="min-h-screen bg-white" />}>
+      <Login />
+    </React.Suspense>
+  )
 }

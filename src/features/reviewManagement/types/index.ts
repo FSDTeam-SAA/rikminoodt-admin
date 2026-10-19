@@ -13,6 +13,7 @@ export interface ReviewItem {
   status: "Published" | "Pending" | "Flagged"
   createdAt: string
   orderId?: string
+  photoUrl?: string
   adminReply?: string
   repliedAt?: string
   verifiedPurchase?: boolean

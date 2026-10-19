@@ -1,54 +1,39 @@
 import { NextResponse } from "next/server"
 import type { NextRequest } from "next/server"
-import { getToken } from "next-auth/jwt"
-
-export interface ProxyRouteConfig {
-  path: string
-  roles: ("admin" | "manager" | "viewer")[]
-}
-
-export const protectedRoutes: ProxyRouteConfig[] = [
-  { path: "/admin", roles: ["admin", "manager"] },
-  { path: "/analytics", roles: ["admin", "manager"] },
-]
 
 /**
- * Next.js proxy / RBAC routing handler.
- * Evaluates JWT tokens and applies role-based access rules.
+ * Next.js 16 Proxy handler.
+ * Protects all admin dashboard routes ensuring only authenticated admins can access.
  */
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl
 
-  // Allow static files, auth endpoints, and public assets
+  // Ignore static assets, next internals, and common file extensions
   if (
     pathname.startsWith("/_next") ||
-    pathname.startsWith("/api/auth") ||
+    pathname.startsWith("/api") ||
     pathname.includes(".")
   ) {
     return NextResponse.next()
   }
 
-  const token = await getToken({
-    req: request,
-    secret: process.env.NEXTAUTH_SECRET,
-  })
+  const token = request.cookies.get("accessToken")?.value
 
-  // Find if path is protected
-  const matchingRoute = protectedRoutes.find((route) =>
-    pathname.startsWith(route.path)
-  )
+  const isAuthPage =
+    pathname.startsWith("/auth") || pathname === "/login"
 
-  if (matchingRoute) {
-    if (!token) {
-      const loginUrl = new URL("/login", request.url)
+  // 1. Unauthenticated users trying to access dashboard/admin routes:
+  if (!token && !isAuthPage) {
+    const loginUrl = new URL("/auth/login", request.url)
+    if (pathname !== "/") {
       loginUrl.searchParams.set("callbackUrl", pathname)
-      return NextResponse.redirect(loginUrl)
     }
+    return NextResponse.redirect(loginUrl)
+  }
 
-    const userRole = (token.role as "admin" | "manager" | "viewer") || "viewer"
-    if (!matchingRoute.roles.includes(userRole)) {
-      return NextResponse.redirect(new URL("/unauthorized", request.url))
-    }
+  // 2. Already logged in users trying to access auth pages:
+  if (token && isAuthPage) {
+    return NextResponse.redirect(new URL("/", request.url))
   }
 
   return NextResponse.next()

@@ -1,234 +1,219 @@
 import api from "@/lib/api"
-import { UserItem, UsersFilter, UsersResponse, GeneratedBook, UserOrder } from "../types"
+import {
+  UserItem,
+  UsersFilter,
+  UsersResponse,
+  GeneratedBook,
+  UserOrder,
+} from "../types"
 
-export const sampleBooks: GeneratedBook[] = [
-  { id: "b-1", title: "Noah and the Ocean Friends", cover: "/books/noah.jpg" },
-  { id: "b-2", title: "Mia's Magic Garden", cover: "/books/mia.jpg" },
-  { id: "b-3", title: "Noah and the Ocean Friends", cover: "/books/noah.jpg" },
-  { id: "b-4", title: "Ben's Big Dream", cover: "/books/ben.jpg" },
-  { id: "b-5", title: "Noah and the Ocean Friends", cover: "/books/noah.jpg" },
-  { id: "b-6", title: "Ben's Big Dream", cover: "/books/ben.jpg" },
-  { id: "b-7", title: "Noah and the Ocean Friends", cover: "/books/noah.jpg" },
-  { id: "b-8", title: "Noah and the Ocean Friends", cover: "/books/noah.jpg" },
-  { id: "b-9", title: "Noah and the Ocean Friends", cover: "/books/noah.jpg" },
-  { id: "b-10", title: "Noah and the Ocean Friends", cover: "/books/noah.jpg" },
-  { id: "b-11", title: "Ben's Big Dream", cover: "/books/ben.jpg" },
-  { id: "b-12", title: "Noah and the Ocean Friends", cover: "/books/noah.jpg" },
-  { id: "b-13", title: "Ben's Big Dream", cover: "/books/ben.jpg" },
-  { id: "b-14", title: "Noah and the Ocean Friends", cover: "/books/noah.jpg" },
-  { id: "b-15", title: "Mia's Magic Garden", cover: "/books/mia.jpg" },
-  { id: "b-16", title: "Noah and the Ocean Friends", cover: "/books/noah.jpg" },
-]
-
-export const sampleOrders: UserOrder[] = [
-  {
-    id: "ORD-1234",
-    bookTitle: "Ben’s Big Dream",
-    orderDate: "8/25/2027",
-    amount: "$50.99",
-    copies: 10,
-    status: "Delivered",
-  },
-  {
-    id: "ORD-1234",
-    bookTitle: "Ben’s Big Dream",
-    orderDate: "8/25/2027",
-    amount: "$50.99",
-    copies: 10,
-    status: "Delivered",
-  },
-  {
-    id: "ORD-1234",
-    bookTitle: "Ben’s Big Dream",
-    orderDate: "8/25/2027",
-    amount: "$50.99",
-    copies: 10,
-    status: "Delivered",
-  },
-]
-
-export const mockUsers: UserItem[] = [
-  {
-    id: "usr-1",
-    name: "Akah Larry",
-    email: "Secretary@gmail.com",
-    avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80",
-    registrationDate: "8/25/2027",
-    booksGenerated: 50,
-    booksPrinted: 10,
-    status: "Active",
-    memberSince: "9/16/2026",
-    generatedBooks: sampleBooks,
-    orderHistory: sampleOrders,
-  },
-  {
-    id: "usr-2",
-    name: "Kevin Brown",
-    email: "kevin.brown@hotmail.com",
-    avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&auto=format&fit=crop&q=80",
-    registrationDate: "2/2/2026",
-    booksGenerated: 35,
-    booksPrinted: 6,
-    status: "Active",
-    memberSince: "1/12/2026",
-    generatedBooks: sampleBooks,
-    orderHistory: sampleOrders,
-  },
-  {
-    id: "usr-3",
-    name: "Isaac Johnson",
-    email: "isaac.j@icloud.com",
-    avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=100&auto=format&fit=crop&q=80",
-    registrationDate: "5/5/2023",
-    booksGenerated: 55,
-    booksPrinted: 11,
-    status: "Active",
-    memberSince: "3/10/2023",
-    generatedBooks: sampleBooks,
-    orderHistory: sampleOrders,
-  },
-  {
-    id: "usr-4",
-    name: "Lily Thompson",
-    email: "lily.t@live.com",
-    avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&auto=format&fit=crop&q=80",
-    registrationDate: "8/17/2025",
-    booksGenerated: 50,
-    booksPrinted: 14,
-    status: "Active",
-    memberSince: "6/01/2025",
-    generatedBooks: sampleBooks,
-    orderHistory: sampleOrders,
-  },
-  {
-    id: "usr-5",
-    name: "David Nwosu",
-    email: "david.n@example.com",
-    avatar: "https://images.unsplash.com/photo-1522075469751-3a6694fb2f61?w=100&auto=format&fit=crop&q=80",
-    registrationDate: "6/1/2025",
-    booksGenerated: 30,
-    booksPrinted: 12,
-    status: "Active",
-    memberSince: "4/15/2025",
-    generatedBooks: sampleBooks,
-    orderHistory: sampleOrders,
-  },
-  {
-    id: "usr-6",
-    name: "Fiona Lin",
-    email: "fiona.lin@gmail.com",
-    avatar: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=100&auto=format&fit=crop&q=80",
-    registrationDate: "11/22/2028",
-    booksGenerated: 60,
-    booksPrinted: 15,
-    status: "Active",
-    memberSince: "10/05/2028",
-    generatedBooks: sampleBooks,
-    orderHistory: sampleOrders,
-  },
-  {
-    id: "usr-7",
-    name: "Akah Larry",
-    email: "Secretary@gmail.com",
-    avatar: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=100&auto=format&fit=crop&q=80",
-    registrationDate: "8/25/2027",
-    booksGenerated: 50,
-    booksPrinted: 10,
-    status: "Active",
-    memberSince: "9/16/2026",
-    generatedBooks: sampleBooks,
-    orderHistory: sampleOrders,
-  },
-  {
-    id: "usr-8",
-    name: "Jasmine Wu",
-    email: "jasmine.wu@gmail.com",
-    avatar: "https://images.unsplash.com/photo-1517841905240-472988babdf9?w=100&auto=format&fit=crop&q=80",
-    registrationDate: "7/19/2028",
-    booksGenerated: 40,
-    booksPrinted: 9,
-    status: "Active",
-    memberSince: "5/20/2028",
-    generatedBooks: sampleBooks,
-    orderHistory: sampleOrders,
-  },
-  {
-    id: "usr-9",
-    name: "Bethany Choi",
-    email: "BethanyC@example.com",
-    avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80",
-    registrationDate: "3/14/2026",
-    booksGenerated: 45,
-    booksPrinted: 8,
-    status: "Active",
-    memberSince: "1/18/2026",
-    generatedBooks: sampleBooks,
-    orderHistory: sampleOrders,
-  },
-  {
-    id: "usr-10",
-    name: "Hannah Patel",
-    email: "hannah.patel@outlook.com",
-    avatar: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=100&auto=format&fit=crop&q=80",
-    registrationDate: "9/12/2029",
-    booksGenerated: 70,
-    booksPrinted: 20,
-    status: "Active",
-    memberSince: "7/08/2029",
-    generatedBooks: sampleBooks,
-    orderHistory: sampleOrders,
-  },
-]
+const DEFAULT_AVATAR =
+  "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80"
 
 export function slugifyUsername(name: string): string {
-  return name.toLowerCase().trim().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "")
+  return (name || "")
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "")
 }
 
+export const mockUsers: any[] = [
+  { id: "usr-1", name: "Akah Larry" },
+  { id: "usr-2", name: "Kevin Brown" },
+]
+
 export function findUserBySlugOrId(identifier: string): UserItem {
-  const decoded = decodeURIComponent(identifier).toLowerCase()
-  const found = mockUsers.find((u) => {
-    const slug = slugifyUsername(u.name)
-    const normalizedName = u.name.toLowerCase()
-    return (
-      u.id.toLowerCase() === decoded ||
-      slug === decoded ||
-      normalizedName === decoded ||
-      normalizedName.replace(/\s+/g, "-") === decoded
-    )
-  })
-  return found || mockUsers[0]
+  return {
+    id: identifier,
+    name: "Customer User",
+    email: "user@example.com",
+    avatar: DEFAULT_AVATAR,
+    registrationDate: "N/A",
+    booksGenerated: 0,
+    booksPrinted: 0,
+    status: "Active",
+    memberSince: "N/A",
+    generatedBooks: [],
+    orderHistory: [],
+  }
 }
 
 export const usersApi = {
+  /**
+   * Fetch paginated users from backend
+   * Calls /admin/users or /user/all-users as primary
+   */
   async getUsers(filter?: UsersFilter): Promise<UsersResponse> {
     try {
-      const { data } = await api.get<UsersResponse>("/users", { params: filter })
-      return data
-    } catch {
-      let list = [...mockUsers]
-      if (filter?.search) {
-        const q = filter.search.toLowerCase()
-        list = list.filter(
-          (u) =>
-            u.name.toLowerCase().includes(q) ||
-            u.email.toLowerCase().includes(q)
-        )
+      const page = filter?.page || 1
+      const limit = filter?.limit || 9
+      const search = filter?.search || ""
+
+      // 1. Try GET /admin/users first
+      let rawUsers: any[] = []
+      let total = 0
+      let totalPages = 1
+
+      const adminRes = await api
+        .get<any>("/admin/users", {
+          params: { page, limit, search: search || undefined },
+        })
+        .catch(() => null)
+
+      if (adminRes?.data?.data?.rows && Array.isArray(adminRes.data.data.rows)) {
+        rawUsers = adminRes.data.data.rows
+        total = adminRes.data.meta?.totalData ?? rawUsers.length
+        totalPages = adminRes.data.meta?.totalPages ?? 1
+      } else {
+        // Fallback to /user/all-users which returns { data: { users, paginationInfo } }
+        const allUsersRes = await api.get<any>("/user/all-users", {
+          params: { page, limit, search: search || undefined },
+        })
+
+        const payload = allUsersRes.data?.data
+        rawUsers = payload?.users || []
+        total =
+          allUsersRes.data?.meta?.total ??
+          payload?.paginationInfo?.totalData ??
+          rawUsers.length
+        totalPages =
+          allUsersRes.data?.meta?.totalPages ??
+          payload?.paginationInfo?.totalPages ??
+          1
       }
+
+      const users: UserItem[] = rawUsers.map((u: any) => ({
+        id: u._id || u.id,
+        name: u.name || "Customer User",
+        email: u.email,
+        avatar: u.profileImage || DEFAULT_AVATAR,
+        registrationDate: u.registrationDate
+          ? new Date(u.registrationDate).toLocaleDateString("en-US")
+          : u.createdAt
+          ? new Date(u.createdAt).toLocaleDateString("en-US")
+          : "N/A",
+        booksGenerated: u.booksGenerated ?? 0,
+        booksPrinted: u.booksPrinted ?? 0,
+        status: (u.status || "ACTIVE").toUpperCase() === "ACTIVE" ? "Active" : "Inactive",
+        memberSince: u.createdAt
+          ? new Date(u.createdAt).toLocaleDateString("en-US")
+          : "N/A",
+      }))
+
       return {
-        users: list,
-        total: 120,
-        page: filter?.page || 1,
-        totalPages: 17,
+        users,
+        total,
+        page,
+        totalPages: Math.max(totalPages, 1),
+      }
+    } catch (err) {
+      console.error("Failed to fetch users from backend:", err)
+      return {
+        users: [],
+        total: 0,
+        page: 1,
+        totalPages: 1,
       }
     }
   },
 
+  /**
+   * Fetch single user details including generated books and print orders
+   * Endpoint: GET /admin/users/:id
+   */
   async getUserById(identifier: string): Promise<UserItem | undefined> {
     try {
-      const { data } = await api.get<UserItem>(`/users/${identifier}`)
-      return data
-    } catch {
-      return findUserBySlugOrId(identifier)
+      // If identifier is not a 24-char ObjectId, first find the user by slug/name
+      let targetId = identifier
+      const isObjectId = /^[0-9a-fA-F]{24}$/.test(identifier)
+
+      if (!isObjectId) {
+        const listRes = await usersApi.getUsers({ limit: 50 })
+        const found = listRes.users.find(
+          (u) =>
+            u.id === identifier ||
+            slugifyUsername(u.name) === identifier.toLowerCase()
+        )
+        if (found) {
+          targetId = found.id
+        }
+      }
+
+      const res = await api.get<any>(`/admin/users/${targetId}`)
+      const payload = res.data?.data
+
+      if (!payload?.user) {
+        return undefined
+      }
+
+      const u = payload.user
+
+      const generatedBooks: GeneratedBook[] = (payload.generatedBooks || []).map(
+        (b: any) => ({
+          id: b._id,
+          title: b.theme ? b.theme.replace(/_/g, " ") : "Custom Storybook",
+          cover:
+            b.coverImageUrl ||
+            "https://res.cloudinary.com/dwl2rfofz/image/upload/v1792299096/books/6ad44fc3b897710f4ee69fbf/illustrations/page-1-3c9ae49926a744178c5e1023b6c51949.png",
+        })
+      )
+
+      const orderHistory: UserOrder[] = (payload.orderHistory || []).map(
+        (o: any) => ({
+          id: o._id ? `ORD-${o._id.toString().slice(-4).toUpperCase()}` : "ORD-0000",
+          bookTitle: o.book?.theme ? o.book.theme.replace(/_/g, " ") : "Storybook Print",
+          orderDate: o.createdAt
+            ? new Date(o.createdAt).toLocaleDateString("en-US")
+            : "N/A",
+          amount: `$${o.totalAmount || (o.quantity * o.pricePerCopy) || 0}`,
+          copies: o.quantity || 1,
+          status:
+            o.status === "DELIVERED"
+              ? "Delivered"
+              : o.status === "PRINTING"
+              ? "Processing"
+              : "Processing",
+        })
+      )
+
+      return {
+        id: u._id,
+        name: u.name || "Customer User",
+        email: u.email,
+        avatar: u.profileImage || DEFAULT_AVATAR,
+        registrationDate: u.createdAt
+          ? new Date(u.createdAt).toLocaleDateString("en-US")
+          : "N/A",
+        booksGenerated: payload.totalBooksGenerated ?? generatedBooks.length,
+        booksPrinted: payload.totalPrintOrders ?? orderHistory.length,
+        status: (u.status || "ACTIVE").toUpperCase() === "ACTIVE" ? "Active" : "Inactive",
+        memberSince: u.createdAt
+          ? new Date(u.createdAt).toLocaleDateString("en-US")
+          : "N/A",
+        generatedBooks,
+        orderHistory,
+      }
+    } catch (err) {
+      console.error(`Failed to fetch user ${identifier}:`, err)
+      return undefined
+    }
+  },
+
+  /**
+   * Update user status (Active vs Suspended)
+   * Endpoint: PATCH /admin/users/:id/status
+   */
+  async updateUserStatus(
+    userId: string,
+    status: "ACTIVE" | "SUSPENDED"
+  ): Promise<boolean> {
+    try {
+      await api.patch(`/admin/users/${userId}/status`, { status })
+      return true
+    } catch (err) {
+      console.error("Failed to update user status:", err)
+      throw err
     }
   },
 }

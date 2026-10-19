@@ -1,27 +1,34 @@
 import axios, { AxiosError, InternalAxiosRequestConfig } from "axios"
-import { getSession } from "next-auth/react"
+import { getAccessToken, clearAuthSession } from "./auth-storage"
+
+const getBaseUrl = () => {
+  return (
+    process.env.NEXT_PUBLIC_BACKEND_API_URL ||
+    process.env.NEXT_PUBLIC_API_URL ||
+    "http://localhost:5000/api/v1"
+  )
+}
 
 export const api = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_URL || "/api",
+  baseURL: getBaseUrl(),
   headers: {
     "Content-Type": "application/json",
   },
   timeout: 30000,
 })
 
-// Request interceptor: Attach JWT token from NextAuth session
+// Request interceptor: Attach JWT token from cookie / localStorage
 api.interceptors.request.use(
-  async (config: InternalAxiosRequestConfig) => {
+  (config: InternalAxiosRequestConfig) => {
     try {
       if (typeof window !== "undefined") {
-        const session = await getSession()
-        const token = (session as any)?.accessToken || (session?.user as any)?.token
+        const token = getAccessToken()
         if (token && config.headers) {
           config.headers.Authorization = `Bearer ${token}`
         }
       }
     } catch {
-      // In case session fetch fails during SSR or network issue
+      // In case storage fetch fails
     }
     return config
   },
@@ -36,7 +43,11 @@ api.interceptors.response.use(
   (error: AxiosError) => {
     if (error.response?.status === 401) {
       if (typeof window !== "undefined") {
-        // Handle redirect or logout if unauthorized
+        clearAuthSession()
+        const currentPath = window.location.pathname
+        if (!currentPath.startsWith("/auth")) {
+          window.location.href = `/auth/login?callbackUrl=${encodeURIComponent(currentPath)}`
+        }
       }
     }
     return Promise.reject(error)

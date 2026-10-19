@@ -18,7 +18,7 @@ export function ReviewManagementView() {
       </div>
 
       {/* Top Metric Cards */}
-      <ReviewsMetricCards />
+      {/* <ReviewsMetricCards /> */}
 
       {/* Reviews Data Table with Search, Filter Tabs & Modal */}
       <ReviewsTable />

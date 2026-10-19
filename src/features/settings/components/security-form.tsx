@@ -1,8 +1,9 @@
 "use client"
 
 import * as React from "react"
-import { Eye, EyeOff } from "lucide-react"
+import { Eye, EyeOff, Loader2 } from "lucide-react"
 import { toast } from "sonner"
+import { useChangePassword } from "../hooks"
 
 export function SecurityForm() {
   const [currentPassword, setCurrentPassword] = React.useState("")
@@ -12,6 +13,8 @@ export function SecurityForm() {
   const [showCurrent, setShowCurrent] = React.useState(false)
   const [showNew, setShowNew] = React.useState(false)
   const [showConfirm, setShowConfirm] = React.useState(false)
+
+  const changePasswordMutation = useChangePassword()
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
@@ -30,6 +33,13 @@ export function SecurityForm() {
       return
     }
 
+    if (newPassword.length < 6) {
+      toast.error("Password too short", {
+        description: "New password must be at least 6 characters long.",
+      })
+      return
+    }
+
     if (newPassword !== confirmPassword) {
       toast.error("Passwords do not match", {
         description: "Please ensure your new password and confirmation match.",
@@ -37,13 +47,30 @@ export function SecurityForm() {
       return
     }
 
-    toast.success("Password Changed Successfully", {
-      description: "Your account credentials have been updated securely.",
-    })
-
-    setCurrentPassword("")
-    setNewPassword("")
-    setConfirmPassword("")
+    changePasswordMutation.mutate(
+      {
+        oldPassword: currentPassword,
+        newPassword,
+      },
+      {
+        onSuccess: (message) => {
+          toast.success("Password Changed Successfully", {
+            description: message || "Your account credentials have been updated securely.",
+          })
+          setCurrentPassword("")
+          setNewPassword("")
+          setConfirmPassword("")
+        },
+        onError: (err: any) => {
+          toast.error("Password Change Failed", {
+            description:
+              err.response?.data?.message ||
+              err.message ||
+              "Invalid old password or failed request.",
+          })
+        },
+      }
+    )
   }
 
   return (
@@ -112,6 +139,9 @@ export function SecurityForm() {
                 )}
               </button>
             </div>
+            <p className="text-xs text-slate-400">
+              Must be at least 6 characters long
+            </p>
           </div>
 
           {/* Confirm New Password Field */}
@@ -147,9 +177,17 @@ export function SecurityForm() {
         <div className="pt-6 border-t border-slate-200/80 flex items-center justify-start">
           <button
             type="submit"
-            className="w-full sm:w-80 h-12 px-4 py-3 bg-[#E88DA0] hover:bg-[#DE778C] text-white text-lg font-semibold rounded-lg border-l-2 border-[#E88DA0] flex items-center justify-center transition-all cursor-pointer shadow-xs active:scale-[0.99]"
+            disabled={changePasswordMutation.isPending}
+            className="w-full sm:w-80 h-12 px-4 py-3 bg-[#E88DA0] hover:bg-[#DE778C] text-white text-lg font-semibold rounded-lg border-l-2 border-[#E88DA0] flex items-center justify-center gap-2 transition-all cursor-pointer shadow-xs active:scale-[0.99] disabled:opacity-50"
           >
-            Save Changes
+            {changePasswordMutation.isPending ? (
+              <>
+                <Loader2 className="w-5 h-5 animate-spin" />
+                <span>Updating Password...</span>
+              </>
+            ) : (
+              <span>Save Changes</span>
+            )}
           </button>
         </div>
       </form>
