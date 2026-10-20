@@ -1,3 +1,4 @@
+import { Suspense } from "react"
 import { UserDetailPageClient } from "./user-detail-client"
 import { mockUsers, slugifyUsername } from "@/features/userManagement/api"
 
@@ -7,11 +8,23 @@ export function generateStaticParams() {
   return [...bySlug, ...byId]
 }
 
-export default async function UserManagementDetailPage({
+async function UserDetailContent({
   params,
 }: {
   params: Promise<{ username: string }>
 }) {
   const { username } = await params
   return <UserDetailPageClient username={username} />
+}
+
+export default function UserManagementDetailPage({
+  params,
+}: {
+  params: Promise<{ username: string }>
+}) {
+  return (
+    <Suspense fallback={null}>
+      <UserDetailContent params={params} />
+    </Suspense>
+  )
 }

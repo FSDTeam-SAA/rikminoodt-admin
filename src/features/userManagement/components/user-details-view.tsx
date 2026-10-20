@@ -1,12 +1,21 @@
 "use client"
 
 import * as React from "react"
-import { BookOpen, Printer, ChevronDown, ArrowLeft } from "lucide-react"
+import {
+  BookOpen,
+  Printer,
+  ChevronDown,
+  ArrowLeft,
+  Download,
+  Eye,
+  Sparkles,
+} from "lucide-react"
 import { useUser } from "../hooks"
-import { UserItem } from "../types"
+import { UserItem, GeneratedBook } from "../types"
 import { useRouter } from "next/navigation"
 import { toast } from "sonner"
 import { findUserBySlugOrId, usersApi } from "../api"
+import { BookReaderModal } from "./book-reader-modal"
 
 interface UserDetailsViewProps {
   userId?: string
@@ -20,9 +29,19 @@ export function UserDetailsView({ userId = "usr-1", onBack }: UserDetailsViewPro
   const fallbackUser = React.useMemo(() => findUserBySlugOrId(userId), [userId])
   const activeUser: UserItem = user || fallbackUser
 
+  // Book Reader Modal State
+  const [selectedBook, setSelectedBook] = React.useState<GeneratedBook | null>(null)
+  const [isReaderOpen, setIsReaderOpen] = React.useState(false)
+
+  const openBookReader = (book: GeneratedBook) => {
+    setSelectedBook(book)
+    setIsReaderOpen(true)
+  }
+
   // 16 books split into 2 rows of 8 as in screenshot
-  const booksRow1 = (activeUser.generatedBooks || []).slice(0, 8)
-  const booksRow2 = (activeUser.generatedBooks || []).slice(8, 16)
+  const allBooks = activeUser.generatedBooks || []
+  const booksRow1 = allBooks.slice(0, 8)
+  const booksRow2 = allBooks.slice(8, 16)
 
   const orders = activeUser.orderHistory || [
     {
@@ -181,57 +200,122 @@ export function UserDetailsView({ userId = "usr-1", onBack }: UserDetailsViewPro
           </p>
         </div>
 
-        {/* Books Shelf Row 1 */}
-        <div className="flex flex-col">
-          <div className="grid grid-cols-4 sm:grid-cols-6 lg:grid-cols-8 gap-3 px-1 items-end">
-            {booksRow1.map((book, idx) => (
-              <div
-                key={`${book.id}-r1-${idx}`}
-                className="flex flex-col items-center group cursor-pointer"
-                title={book.title}
-                onClick={() =>
-                  toast.info(book.title, {
-                    description: "Published Children's Storybook",
-                  })
-                }
-              >
-                <img
-                  src={book.cover}
-                  alt={book.title}
-                  className="w-full h-40 object-cover rounded-[4px] shadow-sm group-hover:-translate-y-1.5 transition-transform duration-200 border border-slate-200/40"
-                />
-              </div>
-            ))}
+        {allBooks.length === 0 ? (
+          <div className="bg-white rounded-xl p-8 border border-slate-100 text-center text-slate-400">
+            <BookOpen className="w-12 h-12 mx-auto mb-2 opacity-30" />
+            <p className="text-base font-medium">No books generated yet by this user</p>
           </div>
-          {/* Wooden Shelf Ledge 1 */}
-          <div className="w-full h-2.5 rounded-[3px] bg-[#D99B69] shadow-[inset_0px_2px_4px_0px_rgba(0,0,0,0.25)] border-t border-[#C08552] mt-0.5" />
-        </div>
+        ) : (
+          <>
+            {/* Books Shelf Row 1 */}
+            <div className="flex flex-col">
+              <div className="grid grid-cols-4 sm:grid-cols-6 lg:grid-cols-8 gap-3.5 px-1 items-end">
+                {booksRow1.map((book, idx) => (
+                  <div
+                    key={`${book.id}-r1-${idx}`}
+                    className="flex flex-col items-center group cursor-pointer"
+                    onClick={() => openBookReader(book)}
+                    title={`Click to read & download: ${book.title}`}
+                  >
+                    <div className="relative w-full aspect-[2/3] max-h-44 rounded-[5px] overflow-hidden shadow-sm group-hover:shadow-lg group-hover:-translate-y-2 transition-all duration-200 border border-slate-200/60 bg-stone-100">
+                      <img
+                        src={book.cover}
+                        alt={book.title}
+                        className="w-full h-full object-cover"
+                      />
+                      {book.status && (
+                        <span className="absolute top-1.5 right-1.5 text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-emerald-600/90 text-white shadow-xs">
+                          {book.status}
+                        </span>
+                      )}
+                      {/* Hover Action Overlay */}
+                      <div className="absolute inset-0 bg-stone-900/65 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex flex-col items-center justify-center gap-1.5 p-2 text-white">
+                        <div className="w-8 h-8 rounded-full bg-white/20 backdrop-blur-xs flex items-center justify-center">
+                          <BookOpen className="w-4 h-4 text-white" />
+                        </div>
+                        <span className="text-[11px] font-bold tracking-wide uppercase text-white drop-shadow-xs">
+                          Read Book
+                        </span>
+                        <span className="text-[10px] text-amber-200 font-semibold flex items-center gap-1">
+                          <Eye className="w-3 h-3" />
+                          Flip & Download
+                        </span>
+                      </div>
+                    </div>
+                    {/* Book Title */}
+                    <div className="mt-1.5 w-full text-center px-1">
+                      <p
+                        className="text-xs font-semibold text-slate-800 truncate group-hover:text-[#DE778C] transition-colors"
+                        title={book.title}
+                      >
+                        {book.title}
+                      </p>
+                      <span className="text-[10px] text-slate-400 font-medium">
+                        {book.pages?.length || 6} pages
+                      </span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+              {/* Wooden Shelf Ledge 1 */}
+              <div className="w-full h-3 rounded-[3px] bg-[#D99B69] shadow-[inset_0px_2px_4px_0px_rgba(0,0,0,0.25)] border-t border-[#C08552] mt-1" />
+            </div>
 
-        {/* Books Shelf Row 2 */}
-        <div className="flex flex-col mt-2">
-          <div className="grid grid-cols-4 sm:grid-cols-6 lg:grid-cols-8 gap-3 px-1 items-end">
-            {booksRow2.map((book, idx) => (
-              <div
-                key={`${book.id}-r2-${idx}`}
-                className="flex flex-col items-center group cursor-pointer"
-                title={book.title}
-                onClick={() =>
-                  toast.info(book.title, {
-                    description: "Published Children's Storybook",
-                  })
-                }
-              >
-                <img
-                  src={book.cover}
-                  alt={book.title}
-                  className="w-full h-40 object-cover rounded-[4px] shadow-sm group-hover:-translate-y-1.5 transition-transform duration-200 border border-slate-200/40"
-                />
+            {/* Books Shelf Row 2 (if more than 8 books) */}
+            {booksRow2.length > 0 && (
+              <div className="flex flex-col mt-4">
+                <div className="grid grid-cols-4 sm:grid-cols-6 lg:grid-cols-8 gap-3.5 px-1 items-end">
+                  {booksRow2.map((book, idx) => (
+                    <div
+                      key={`${book.id}-r2-${idx}`}
+                      className="flex flex-col items-center group cursor-pointer"
+                      onClick={() => openBookReader(book)}
+                      title={`Click to read & download: ${book.title}`}
+                    >
+                      <div className="relative w-full aspect-[2/3] max-h-44 rounded-[5px] overflow-hidden shadow-sm group-hover:shadow-lg group-hover:-translate-y-2 transition-all duration-200 border border-slate-200/60 bg-stone-100">
+                        <img
+                          src={book.cover}
+                          alt={book.title}
+                          className="w-full h-full object-cover"
+                        />
+                        {book.status && (
+                          <span className="absolute top-1.5 right-1.5 text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-emerald-600/90 text-white shadow-xs">
+                            {book.status}
+                          </span>
+                        )}
+                        <div className="absolute inset-0 bg-stone-900/65 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex flex-col items-center justify-center gap-1.5 p-2 text-white">
+                          <div className="w-8 h-8 rounded-full bg-white/20 backdrop-blur-xs flex items-center justify-center">
+                            <BookOpen className="w-4 h-4 text-white" />
+                          </div>
+                          <span className="text-[11px] font-bold tracking-wide uppercase text-white drop-shadow-xs">
+                            Read Book
+                          </span>
+                          <span className="text-[10px] text-amber-200 font-semibold flex items-center gap-1">
+                            <Eye className="w-3 h-3" />
+                            Flip & Download
+                          </span>
+                        </div>
+                      </div>
+                      <div className="mt-1.5 w-full text-center px-1">
+                        <p
+                          className="text-xs font-semibold text-slate-800 truncate group-hover:text-[#DE778C] transition-colors"
+                          title={book.title}
+                        >
+                          {book.title}
+                        </p>
+                        <span className="text-[10px] text-slate-400 font-medium">
+                          {book.pages?.length || 6} pages
+                        </span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                {/* Wooden Shelf Ledge 2 */}
+                <div className="w-full h-3 rounded-[3px] bg-[#D99B69] shadow-[inset_0px_2px_4px_0px_rgba(0,0,0,0.25)] border-t border-[#C08552] mt-1" />
               </div>
-            ))}
-          </div>
-          {/* Wooden Shelf Ledge 2 */}
-          <div className="w-full h-2.5 rounded-[3px] bg-[#D99B69] shadow-[inset_0px_2px_4px_0px_rgba(0,0,0,0.25)] border-t border-[#C08552] mt-0.5" />
-        </div>
+            )}
+          </>
+        )}
       </div>
 
       {/* Order History Section */}
@@ -245,7 +329,7 @@ export function UserDetailsView({ userId = "usr-1", onBack }: UserDetailsViewPro
           </p>
         </div>
 
-        {/* Order History Table matching user snippet */}
+        {/* Order History Table */}
         <div className="w-full bg-white rounded-lg border border-slate-100 shadow-[0px_1px_3px_0px_rgba(228,234,248,0.7)] overflow-hidden">
           {/* Table Header */}
           <div className="w-full p-4 bg-white border-b border-[#E4EAF8] grid grid-cols-12 items-center text-stone-900 text-lg font-bold">
@@ -259,36 +343,71 @@ export function UserDetailsView({ userId = "usr-1", onBack }: UserDetailsViewPro
 
           {/* Table Rows */}
           <div className="divide-y divide-slate-100/70">
-            {orders.map((order, idx) => (
-              <div
-                key={`${order.id}-${idx}`}
-                className="w-full px-4 py-3.5 hover:bg-slate-50/60 transition-colors grid grid-cols-12 items-center text-base"
-              >
-                <div className="col-span-2 text-center text-slate-900 font-normal">
-                  {order.id}
+            {orders.map((order, idx) => {
+              const matchedBook = allBooks.find(
+                (b) =>
+                  b.id === order.bookId ||
+                  b.title.toLowerCase().trim() ===
+                    order.bookTitle?.toLowerCase().trim()
+              )
+
+              return (
+                <div
+                  key={`${order.id}-${idx}`}
+                  className="w-full px-4 py-3.5 hover:bg-slate-50/60 transition-colors grid grid-cols-12 items-center text-base"
+                >
+                  <div className="col-span-2 text-center text-slate-900 font-normal">
+                    {order.id}
+                  </div>
+                  <div className="col-span-3 text-center">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        if (matchedBook) {
+                          openBookReader(matchedBook)
+                        } else {
+                          openBookReader({
+                            id: order.bookId || `book-${idx}`,
+                            title: order.bookTitle,
+                            cover: allBooks[0]?.cover || "",
+                          })
+                        }
+                      }}
+                      className="text-slate-900 hover:text-[#DE778C] font-medium transition-colors hover:underline cursor-pointer inline-flex items-center gap-1.5"
+                      title="Click to read this book"
+                    >
+                      <BookOpen className="w-3.5 h-3.5 text-stone-400" />
+                      <span>{order.bookTitle}</span>
+                    </button>
+                  </div>
+                  <div className="col-span-2 text-center text-slate-900 font-normal">
+                    {order.orderDate}
+                  </div>
+                  <div className="col-span-2 text-center text-slate-900 font-normal">
+                    {order.amount}
+                  </div>
+                  <div className="col-span-2 text-center text-slate-900 font-normal">
+                    {order.copies}
+                  </div>
+                  <div className="col-span-1 flex justify-center items-center">
+                    <span className="px-2.5 py-1 bg-emerald-500/10 text-emerald-500 rounded-lg text-sm font-normal border border-emerald-500/20">
+                      {order.status}
+                    </span>
+                  </div>
                 </div>
-                <div className="col-span-3 text-center text-slate-900 font-normal">
-                  {order.bookTitle}
-                </div>
-                <div className="col-span-2 text-center text-slate-900 font-normal">
-                  {order.orderDate}
-                </div>
-                <div className="col-span-2 text-center text-slate-900 font-normal">
-                  {order.amount}
-                </div>
-                <div className="col-span-2 text-center text-slate-900 font-normal">
-                  {order.copies}
-                </div>
-                <div className="col-span-1 flex justify-center items-center">
-                  <span className="px-2.5 py-1 bg-emerald-500/10 text-emerald-500 rounded-lg text-sm font-normal border border-emerald-500/20">
-                    {order.status}
-                  </span>
-                </div>
-              </div>
-            ))}
+              )
+            })}
           </div>
         </div>
       </div>
+
+      {/* Interactive Flipbook Reader Modal */}
+      <BookReaderModal
+        isOpen={isReaderOpen}
+        onClose={() => setIsReaderOpen(false)}
+        book={selectedBook}
+        orders={orders}
+      />
     </div>
   )
 }

@@ -2,11 +2,20 @@
 
 import * as React from "react"
 import Link from "next/link"
-import { ChevronLeft, ChevronDown, Check, Save } from "lucide-react"
+import {
+  ChevronLeft,
+  ChevronDown,
+  Check,
+  Save,
+  BookOpen,
+  Eye,
+  Download,
+} from "lucide-react"
 import { useOrder, useUpdateOrderStatus } from "../hooks"
 import { OrderItem } from "../types"
 import { findOrderById } from "../api"
 import { toast } from "sonner"
+import { BookReaderModal } from "@/features/userManagement/components/book-reader-modal"
 
 interface OrderDetailsViewProps {
   orderId?: string
@@ -20,7 +29,7 @@ const statusOptions: Array<OrderItem["status"]> = [
 ]
 
 export function OrderDetailsView({ orderId = "ORD-258" }: OrderDetailsViewProps) {
-  const { data: order } = useOrder(orderId)
+  const { data: order, isLoading } = useOrder(orderId)
 
   const fallbackOrder = React.useMemo(() => findOrderById(orderId), [orderId])
   const activeOrder: OrderItem = order || fallbackOrder
@@ -29,6 +38,7 @@ export function OrderDetailsView({ orderId = "ORD-258" }: OrderDetailsViewProps)
     activeOrder.status || "Printing"
   )
   const [dropdownOpen, setDropdownOpen] = React.useState(false)
+  const [isReaderOpen, setIsReaderOpen] = React.useState(false)
 
   React.useEffect(() => {
     if (activeOrder.status) {
@@ -56,8 +66,9 @@ export function OrderDetailsView({ orderId = "ORD-258" }: OrderDetailsViewProps)
   }
 
   const handleUpdateStatus = () => {
+    const targetId = activeOrder._id || activeOrder.id
     updateStatusMutation.mutate(
-      { orderId: activeOrder.id, status: currentStatus },
+      { orderId: targetId, status: currentStatus },
       {
         onSuccess: () => {
           toast.success("Order Status Updated", {
@@ -73,8 +84,16 @@ export function OrderDetailsView({ orderId = "ORD-258" }: OrderDetailsViewProps)
     )
   }
 
-  // 8 sample pages for Book Preview matching Figma snippet & screenshot
-  const previewPages = Array(8).fill(activeOrder.bookCover || "/books/noah.jpg")
+  // Real book pages from backend API or book cover
+  const bookPages = activeOrder.bookPages && activeOrder.bookPages.length > 0
+    ? activeOrder.bookPages
+    : [
+        {
+          pageNumber: 1,
+          text: "",
+          imageUrl: activeOrder.bookCover || "/books/noah.jpg",
+        },
+      ]
 
   // Tracking Order Progress configuration
   const steps = [
@@ -113,16 +132,19 @@ export function OrderDetailsView({ orderId = "ORD-258" }: OrderDetailsViewProps)
           {/* Avatar + Customer Name + Email */}
           <div className="flex items-center gap-4">
             <img
-              src={activeOrder.customerAvatar || "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80"}
+              src={
+                activeOrder.customerAvatar ||
+                "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80"
+              }
               alt={activeOrder.customerName}
               className="w-14 h-14 rounded-full object-cover border border-slate-100 shrink-0"
             />
             <div className="flex flex-col justify-start items-start gap-0.5">
               <span className="text-gray-900 text-2xl font-semibold">
-                {activeOrder.customerName || "Akah Larry"}
+                {activeOrder.customerName || "Customer"}
               </span>
               <span className="text-slate-400 text-sm font-normal">
-                {activeOrder.email || "Secretary@gmail.com"}
+                {activeOrder.email || "N/A"}
               </span>
             </div>
           </div>
@@ -130,7 +152,9 @@ export function OrderDetailsView({ orderId = "ORD-258" }: OrderDetailsViewProps)
           {/* Member Since info */}
           <div className="flex items-center gap-2 text-base">
             <span className="text-slate-400 font-normal">Member Since:</span>
-            <span className="text-gray-900 font-semibold">9/16/2026</span>
+            <span className="text-gray-900 font-semibold">
+              {activeOrder.memberSince || "10/19/2026"}
+            </span>
           </div>
         </div>
       </div>
@@ -167,7 +191,7 @@ export function OrderDetailsView({ orderId = "ORD-258" }: OrderDetailsViewProps)
                   className="relative z-10 flex flex-col items-center"
                 >
                   {isCurrent ? (
-                    /* Active Glowing Blue Concentric Ring from Figma */
+                    /* Active Glowing Blue Concentric Ring */
                     <div className="w-7 h-7 p-1 bg-blue-400/20 rounded-full flex items-center justify-center">
                       <div className="w-5 h-5 p-1 bg-blue-400 rounded-full flex items-center justify-center">
                         <div className="w-2.5 h-2.5 bg-[#38BDF8] rounded-full" />
@@ -212,18 +236,35 @@ export function OrderDetailsView({ orderId = "ORD-258" }: OrderDetailsViewProps)
         <div className="w-full p-4 sm:p-6 bg-neutral-50 rounded-2xl flex flex-col lg:flex-row items-center justify-between gap-6 border border-neutral-100">
           {/* Left Book Display on Wooden Shelf */}
           <div className="w-full lg:w-72 flex flex-col items-center justify-center shrink-0">
-            <div className="relative flex items-center justify-center">
+            <div
+              className="relative flex items-center justify-center group cursor-pointer"
+              onClick={() => setIsReaderOpen(true)}
+              title="Click to open Flipbook Reader"
+            >
               {/* 3D Spine Gradient on left */}
               <div className="w-2.5 h-72 bg-gradient-to-l from-gray-200 to-stone-400 border border-slate-300/60 rounded-l-[2px] shadow-sm shrink-0" />
               {/* Book Cover Image */}
-              <img
-                src={activeOrder.bookCover || "/books/noah.jpg"}
-                alt={activeOrder.bookTitle || "Noah and the Ocean Friends"}
-                className="w-52 h-72 object-cover rounded-r-[3px] shadow-md border-y border-r border-slate-300/60"
-              />
+              <div className="relative w-52 h-72 overflow-hidden rounded-r-[3px] shadow-md border-y border-r border-slate-300/60 bg-stone-100">
+                <img
+                  src={activeOrder.bookCover || "/books/noah.jpg"}
+                  alt={activeOrder.bookTitle || "Storybook"}
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                />
+                <div className="absolute inset-0 bg-stone-900/50 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex flex-col items-center justify-center gap-2 text-white">
+                  <div className="w-10 h-10 rounded-full bg-white/20 backdrop-blur-xs flex items-center justify-center">
+                    <BookOpen className="w-5 h-5 text-white" />
+                  </div>
+                  <span className="text-xs font-bold uppercase tracking-wider">
+                    Read Book
+                  </span>
+                </div>
+              </div>
             </div>
-            {/* Wooden Shelf Ledge matching snippet */}
+            {/* Wooden Shelf Ledge */}
             <div className="w-64 h-2.5 bg-[#D99B69] rounded-[3px] shadow-[inset_0px_2px_4px_0px_rgba(0,0,0,0.25)] border-t border-[#C08552] mt-0.5" />
+            <p className="text-xs font-semibold text-slate-700 mt-2 text-center truncate max-w-[240px]">
+              {activeOrder.bookTitle}
+            </p>
           </div>
 
           {/* Right White Details Box */}
@@ -250,7 +291,7 @@ export function OrderDetailsView({ orderId = "ORD-258" }: OrderDetailsViewProps)
                     />
                   </button>
 
-                  {/* Dropdown Menu matching Figma screenshot */}
+                  {/* Dropdown Menu */}
                   {dropdownOpen && (
                     <div className="absolute top-full left-0 mt-1 w-full sm:w-48 bg-white rounded-xl shadow-lg border border-slate-200 p-1.5 z-30 flex flex-col gap-1">
                       {statusOptions.map((option) => {
@@ -274,7 +315,7 @@ export function OrderDetailsView({ orderId = "ORD-258" }: OrderDetailsViewProps)
                   )}
                 </div>
 
-                {/* Update Status Button matching Figma snippet */}
+                {/* Update Status Button */}
                 <button
                   type="button"
                   onClick={handleUpdateStatus}
@@ -292,7 +333,7 @@ export function OrderDetailsView({ orderId = "ORD-258" }: OrderDetailsViewProps)
               <div className="py-3 flex items-center justify-between text-base">
                 <span className="text-stone-900 font-semibold">Order ID:</span>
                 <span className="text-slate-600 font-normal">
-                  {activeOrder.id || "R34F34A23"}
+                  {activeOrder.id || "ORD-000"}
                 </span>
               </div>
 
@@ -300,7 +341,7 @@ export function OrderDetailsView({ orderId = "ORD-258" }: OrderDetailsViewProps)
               <div className="py-3 flex items-center justify-between text-base">
                 <span className="text-stone-900 font-semibold">Order date:</span>
                 <span className="text-slate-600 font-normal">
-                  {activeOrder.orderDate || "3 Jan, 2026"}
+                  {activeOrder.orderDate || "N/A"}
                 </span>
               </div>
 
@@ -312,7 +353,7 @@ export function OrderDetailsView({ orderId = "ORD-258" }: OrderDetailsViewProps)
                 <span className="text-slate-600 font-normal text-right">
                   {activeOrder.shippingAddress
                     ? `${activeOrder.shippingAddress.street}, ${activeOrder.shippingAddress.city}, ${activeOrder.shippingAddress.state} ${activeOrder.shippingAddress.zip}, ${activeOrder.shippingAddress.country}`
-                    : "123 Main Street Apartment 4B, New York, NY 10001, United States"}
+                    : "N/A"}
                 </span>
               </div>
 
@@ -320,7 +361,7 @@ export function OrderDetailsView({ orderId = "ORD-258" }: OrderDetailsViewProps)
               <div className="py-3 flex items-center justify-between text-base">
                 <span className="text-stone-900 font-semibold">Quantity:</span>
                 <span className="text-slate-600 font-normal">
-                  {activeOrder.copies || 2}
+                  {activeOrder.copies || 1} Copies
                 </span>
               </div>
 
@@ -328,7 +369,7 @@ export function OrderDetailsView({ orderId = "ORD-258" }: OrderDetailsViewProps)
               <div className="py-3 flex items-center justify-between text-base">
                 <span className="text-stone-900 font-semibold">Total amount:</span>
                 <span className="text-stone-900 font-semibold text-lg">
-                  {activeOrder.amount || "$45.56"}
+                  {activeOrder.amount || "$0.00"}
                 </span>
               </div>
             </div>
@@ -336,37 +377,80 @@ export function OrderDetailsView({ orderId = "ORD-258" }: OrderDetailsViewProps)
         </div>
       </div>
 
-      {/* Book Preview Section matching Figma snippet and screenshot */}
+      {/* Book Preview Section with Real Pages */}
       <div className="w-full p-6 bg-white rounded-2xl border border-neutral-200/80 shadow-2xs flex flex-col gap-4">
-        <div className="flex flex-col justify-start items-start gap-1">
-          <div className="text-stone-900 text-lg font-bold">Book Preview</div>
-          <div className="text-slate-400 text-sm font-normal">
-            Sample pages from the book
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div className="flex flex-col justify-start items-start gap-0.5">
+            <div className="text-stone-900 text-lg font-bold">Book Preview</div>
+            <div className="text-slate-400 text-sm font-normal">
+              Sample pages from &ldquo;{activeOrder.bookTitle}&rdquo;
+            </div>
           </div>
+
+          <button
+            type="button"
+            onClick={() => setIsReaderOpen(true)}
+            className="flex items-center gap-2 px-4 py-2 rounded-xl bg-[#DE778C] hover:bg-[#CF6277] text-white text-sm font-semibold transition-all shadow-xs cursor-pointer self-start sm:self-auto"
+          >
+            <BookOpen className="w-4 h-4" />
+            <span>Open Flipbook Reader</span>
+          </button>
         </div>
 
-        {/* 8 Book Preview Pages in a responsive row */}
-        <div className="grid grid-cols-4 sm:grid-cols-6 lg:grid-cols-8 gap-3">
-          {previewPages.map((cover, idx) => (
+        {/* Real Book Pages Grid */}
+        <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-3.5">
+          {bookPages.map((p, idx) => (
             <div
               key={idx}
               className="flex flex-col items-center group cursor-pointer"
-              title={`Page ${idx + 1}`}
-              onClick={() =>
-                toast.info(`Page ${idx + 1}`, {
-                  description: "Viewing high-resolution sample page",
-                })
-              }
+              title={`Page ${p.pageNumber || idx + 1}: Click to read in Flipbook`}
+              onClick={() => setIsReaderOpen(true)}
             >
-              <img
-                src={cover}
-                alt={`Sample page ${idx + 1}`}
-                className="w-full h-40 object-cover rounded-[3px] shadow-2xs border border-slate-200/70 group-hover:-translate-y-1.5 transition-transform duration-200"
-              />
+              <div className="relative w-full aspect-[2/3] max-h-44 rounded-[5px] overflow-hidden shadow-2xs border border-slate-200/80 group-hover:-translate-y-1.5 transition-all duration-200 bg-stone-100">
+                <img
+                  src={p.imageUrl}
+                  alt={`Page ${p.pageNumber || idx + 1}`}
+                  className="w-full h-full object-cover"
+                />
+                <div className="absolute inset-0 bg-stone-900/50 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex flex-col items-center justify-center gap-1 text-white">
+                  <Eye className="w-5 h-5 text-white" />
+                  <span className="text-[10px] font-bold uppercase">Read</span>
+                </div>
+                <span className="absolute bottom-1 right-1 px-1.5 py-0.5 rounded-xs bg-black/65 text-[10px] text-white font-semibold">
+                  Page {p.pageNumber || idx + 1}
+                </span>
+              </div>
             </div>
           ))}
         </div>
       </div>
+
+      {/* Fullscreen Interactive Flipbook Reader */}
+      <BookReaderModal
+        isOpen={isReaderOpen}
+        onClose={() => setIsReaderOpen(false)}
+        book={{
+          id: activeOrder.bookId || activeOrder.id,
+          title: activeOrder.bookTitle,
+          cover: activeOrder.bookCover || "",
+          status: activeOrder.status,
+          pages: bookPages.map((p, idx) => ({
+            pageNumber: p.pageNumber || idx + 1,
+            text: p.text || "",
+            imageUrl: p.imageUrl,
+          })),
+        }}
+        orders={[
+          {
+            id: activeOrder.id,
+            bookTitle: activeOrder.bookTitle,
+            orderDate: activeOrder.orderDate,
+            amount: activeOrder.amount,
+            copies: activeOrder.copies || 1,
+            status: activeOrder.status,
+          },
+        ]}
+      />
     </div>
   )
 }
