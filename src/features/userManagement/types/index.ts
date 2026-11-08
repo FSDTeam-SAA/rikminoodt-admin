@@ -1,7 +1,10 @@
 export interface BookPage {
   pageNumber: number
   text: string
-  imageUrl: string
+  imageUrl?: string
+  kind?: string
+  storyPageNumber?: number
+  title?: string
 }
 
 export interface GeneratedBook {
@@ -18,6 +21,7 @@ export interface GeneratedBook {
   language?: string
   creatorName?: string
   foreword?: string
+  backCoverText?: string
   titlePosition?: string
   retryCount?: number
   status?: string

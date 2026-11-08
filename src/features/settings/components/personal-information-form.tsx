@@ -235,7 +235,7 @@ export function PersonalInformationForm() {
           </div>
 
           {/* Language Field */}
-          <div className="flex flex-col gap-2.5">
+          {/* <div className="flex flex-col gap-2.5">
             <label className="text-stone-900 text-base font-medium">
               Language
             </label>
@@ -249,9 +249,8 @@ export function PersonalInformationForm() {
                   {formData.language}
                 </span>
                 <ChevronDown
-                  className={`w-4 h-4 text-slate-700 shrink-0 ml-2 transition-transform ${
-                    languageDropdownOpen ? "rotate-180" : ""
-                  }`}
+                  className={`w-4 h-4 text-slate-700 shrink-0 ml-2 transition-transform ${languageDropdownOpen ? "rotate-180" : ""
+                    }`}
                 />
               </button>
 
@@ -267,11 +266,10 @@ export function PersonalInformationForm() {
                           handleChange("language", lang)
                           setLanguageDropdownOpen(false)
                         }}
-                        className={`w-full px-3 py-2 text-left text-sm rounded-lg flex items-center justify-between transition-colors cursor-pointer ${
-                          isSelected
+                        className={`w-full px-3 py-2 text-left text-sm rounded-lg flex items-center justify-between transition-colors cursor-pointer ${isSelected
                             ? "bg-[#E88DA0] text-white font-semibold"
                             : "text-gray-700 hover:bg-slate-50 hover:text-gray-900"
-                        }`}
+                          }`}
                       >
                         <span>{lang}</span>
                         {isSelected && <Check className="w-4 h-4 text-white" />}
@@ -281,7 +279,7 @@ export function PersonalInformationForm() {
                 </div>
               )}
             </div>
-          </div>
+          </div> */}
 
           {/* Phone Field */}
           <div className="flex flex-col gap-2.5 md:col-span-2">

@@ -40,6 +40,7 @@ export function OrderDetailsView({ orderId = "ORD-258" }: OrderDetailsViewProps)
   )
   const [dropdownOpen, setDropdownOpen] = React.useState(false)
   const [isReaderOpen, setIsReaderOpen] = React.useState(false)
+  const [readerInitialPage, setReaderInitialPage] = React.useState<number>(1)
 
   React.useEffect(() => {
     if (activeOrder.status) {
@@ -89,12 +90,12 @@ export function OrderDetailsView({ orderId = "ORD-258" }: OrderDetailsViewProps)
   const bookPages = activeOrder.bookPages && activeOrder.bookPages.length > 0
     ? activeOrder.bookPages
     : [
-        {
-          pageNumber: 1,
-          text: "",
-          imageUrl: activeOrder.bookCover || "/books/noah.jpg",
-        },
-      ]
+      {
+        pageNumber: 1,
+        text: "",
+        imageUrl: activeOrder.bookCover || "/books/noah.jpg",
+      },
+    ]
 
   // Tracking Order Progress configuration
   const steps = [
@@ -216,11 +217,10 @@ export function OrderDetailsView({ orderId = "ORD-258" }: OrderDetailsViewProps)
               return (
                 <div
                   key={`label-${step.key}`}
-                  className={`text-center font-normal transition-colors ${
-                    isCurrent
+                  className={`text-center font-normal transition-colors ${isCurrent
                       ? "text-blue-500 font-semibold"
                       : "text-slate-400"
-                  }`}
+                    }`}
                   style={{ width: "90px" }}
                 >
                   {step.label}
@@ -283,9 +283,8 @@ export function OrderDetailsView({ orderId = "ORD-258" }: OrderDetailsViewProps)
                   >
                     <span>{currentStatus}</span>
                     <ChevronDown
-                      className={`w-4 h-4 text-stone-900 transition-transform ${
-                        dropdownOpen ? "rotate-180" : ""
-                      }`}
+                      className={`w-4 h-4 text-stone-900 transition-transform ${dropdownOpen ? "rotate-180" : ""
+                        }`}
                     />
                   </button>
 
@@ -299,11 +298,10 @@ export function OrderDetailsView({ orderId = "ORD-258" }: OrderDetailsViewProps)
                             key={option}
                             type="button"
                             onClick={() => handleStatusSelect(option)}
-                            className={`w-full px-3 py-2 text-left text-sm rounded-lg transition-colors cursor-pointer font-medium ${
-                              isSelected
+                            className={`w-full px-3 py-2 text-left text-sm rounded-lg transition-colors cursor-pointer font-medium ${isSelected
                                 ? "bg-[#E88DA0] text-white shadow-xs font-semibold"
                                 : "text-gray-700 hover:bg-slate-50 hover:text-gray-900"
-                            }`}
+                              }`}
                           >
                             {option}
                           </button>
@@ -317,7 +315,7 @@ export function OrderDetailsView({ orderId = "ORD-258" }: OrderDetailsViewProps)
                 <button
                   type="button"
                   onClick={handleUpdateStatus}
-                  className="h-12 px-5 bg-[#E88DA0] hover:bg-[#DE778C] text-white rounded-lg border-l-2 border-[#E88DA0] font-semibold text-base sm:text-lg flex items-center justify-center gap-2 transition-all cursor-pointer shadow-xs active:scale-[0.99] shrink-0"
+                  className="h-12 px-5 hover:bg-[#E88DA0] bg-[#DE778C] text-white rounded-lg border-l-2 border-[#E88DA0] font-semibold text-base sm:text-lg flex items-center justify-center gap-2 transition-all cursor-pointer shadow-xs active:scale-[0.99] shrink-0"
                 >
                   <Save className="w-5 h-5 text-white" />
                   <span>Update Status</span>
@@ -387,7 +385,10 @@ export function OrderDetailsView({ orderId = "ORD-258" }: OrderDetailsViewProps)
 
           <button
             type="button"
-            onClick={() => setIsReaderOpen(true)}
+            onClick={() => {
+              setReaderInitialPage(1)
+              setIsReaderOpen(true)
+            }}
             className="flex items-center gap-2 px-4 py-2 rounded-xl bg-[#DE778C] hover:bg-[#CF6277] text-white text-sm font-semibold transition-all shadow-xs cursor-pointer self-start sm:self-auto"
           >
             <BookOpen className="w-4 h-4" />
@@ -402,7 +403,10 @@ export function OrderDetailsView({ orderId = "ORD-258" }: OrderDetailsViewProps)
               key={idx}
               className="flex flex-col items-center group cursor-pointer"
               title={`Page ${p.pageNumber || idx + 1}: Click to read in Flipbook`}
-              onClick={() => setIsReaderOpen(true)}
+              onClick={() => {
+                setReaderInitialPage(p.pageNumber || idx + 1)
+                setIsReaderOpen(true)
+              }}
             >
               <div className="relative w-full aspect-[2/3] max-h-44 rounded-[5px] overflow-hidden shadow-2xs border border-slate-200/80 group-hover:-translate-y-1.5 transition-all duration-200 bg-stone-100">
                 <img
@@ -427,15 +431,27 @@ export function OrderDetailsView({ orderId = "ORD-258" }: OrderDetailsViewProps)
       <BookReaderModal
         isOpen={isReaderOpen}
         onClose={() => setIsReaderOpen(false)}
+        initialPageNumber={readerInitialPage}
         book={{
           id: activeOrder.bookId || activeOrder.id,
           title: activeOrder.bookTitle,
           cover: activeOrder.bookCover || "",
+          coverImageUrl: activeOrder.bookCover || "",
           status: activeOrder.status,
+          creatorName: activeOrder.bookCreatorName,
+          foreword: activeOrder.bookForeword,
+          backCoverText: activeOrder.bookBackCoverText,
+          font: activeOrder.bookFont,
+          titlePosition: activeOrder.bookTitlePosition,
+          language: activeOrder.bookLanguage,
+          pdfUrl: activeOrder.pdfUrl,
           pages: bookPages.map((p, idx) => ({
             pageNumber: p.pageNumber || idx + 1,
             text: p.text || "",
             imageUrl: p.imageUrl,
+            kind: p.kind,
+            storyPageNumber: p.storyPageNumber,
+            title: p.title,
           })),
         }}
         orders={[

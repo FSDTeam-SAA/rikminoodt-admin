@@ -10,6 +10,45 @@ export const initialOrderMetrics: OrderMetrics = {
 
 const DEFAULT_CUSTOMER_AVATAR = "/no-image.png"
 
+const DEFAULT_RISHAD_BOOK_PAGES = [
+  {
+    pageNumber: 1,
+    text: "Today is Rishad's birthday, and his friends Tanvir and Jishad have a special plan! They decide to celebrate by going on a mountain trip to relax and have fun together in nature.",
+    imageUrl:
+      "https://res.cloudinary.com/dwl2rfofz/image/upload/v1792471748/books/6ad6f23bcf4d2d6b6a782f78/illustrations/page-1-5f03d5cc04024a1c84720458897b7909.png",
+  },
+  {
+    pageNumber: 2,
+    text: "With backpacks full and spirits high, the three friends begin their adventure up the mountain path. The air is fresh, and every step brings new excitement!",
+    imageUrl:
+      "https://res.cloudinary.com/dwl2rfofz/image/upload/v1792471839/books/6ad6f23bcf4d2d6b6a782f78/illustrations/page-2-23e38333ada0456d8ecb2e8fc3040d7c.png",
+  },
+  {
+    pageNumber: 3,
+    text: "They set up camp under tall trees. Tanvir cooks a delicious meal with fresh ingredients, while Rishad shares thrilling hunting stories and Jishad talks about their next travel plans.",
+    imageUrl:
+      "https://res.cloudinary.com/dwl2rfofz/image/upload/v1792471932/books/6ad6f23bcf4d2d6b6a782f78/illustrations/page-3-6961910320204b88b7f5430dcbe592b5.png",
+  },
+  {
+    pageNumber: 4,
+    text: "The next day, they explore the mountain's beautiful trails. Helping each other over rocks and roots, their friendship grows stronger with every step.",
+    imageUrl:
+      "https://res.cloudinary.com/dwl2rfofz/image/upload/v1792472023/books/6ad6f23bcf4d2d6b6a782f78/illustrations/page-4-12b7314f7e3a40ab97d2f682ba8072d9.png",
+  },
+  {
+    pageNumber: 5,
+    text: "Evening falls and they gather around a glowing campfire. Sharing stories and laughter, they feel thankful for the day and the magic of true friendship.",
+    imageUrl:
+      "https://res.cloudinary.com/dwl2rfofz/image/upload/v1792472114/books/6ad6f23bcf4d2d6b6a782f78/illustrations/page-5-f70b982c0d5545c7a8eb6a5d0dfbee54.png",
+  },
+  {
+    pageNumber: 6,
+    text: "Ready to go home, the friends pack up with happy hearts. They return feeling refreshed and grateful for their wonderful mountain adventure and lasting friendship.",
+    imageUrl:
+      "https://res.cloudinary.com/dwl2rfofz/image/upload/v1792472295/books/6ad6f23bcf4d2d6b6a782f78/illustrations/page-6-354bff01c28f491584fe8389762d4060.png",
+  },
+]
+
 export const TANVIR_ORDERS: OrderItem[] = [
   {
     id: "ORD-B257",
@@ -22,44 +61,13 @@ export const TANVIR_ORDERS: OrderItem[] = [
     bookTitle: "Rishad's Mountain Adventure",
     bookCover:
       "https://res.cloudinary.com/dwl2rfofz/image/upload/v1792471748/books/6ad6f23bcf4d2d6b6a782f78/illustrations/page-1-5f03d5cc04024a1c84720458897b7909.png",
-    bookPages: [
-      {
-        pageNumber: 1,
-        text: "Today is Rishad's birthday, and his friends Tanvir and Jishad have a special plan! They decide to celebrate by going on a mountain trip to relax and have fun together in nature.",
-        imageUrl:
-          "https://res.cloudinary.com/dwl2rfofz/image/upload/v1792471748/books/6ad6f23bcf4d2d6b6a782f78/illustrations/page-1-5f03d5cc04024a1c84720458897b7909.png",
-      },
-      {
-        pageNumber: 2,
-        text: "With backpacks full and spirits high, the three friends begin their adventure up the mountain path. The air is fresh, and every step brings new excitement!",
-        imageUrl:
-          "https://res.cloudinary.com/dwl2rfofz/image/upload/v1792471839/books/6ad6f23bcf4d2d6b6a782f78/illustrations/page-2-23e38333ada0456d8ecb2e8fc3040d7c.png",
-      },
-      {
-        pageNumber: 3,
-        text: "They set up camp under tall trees. Tanvir cooks a delicious meal with fresh ingredients, while Rishad shares thrilling hunting stories and Jishad talks about their next travel plans.",
-        imageUrl:
-          "https://res.cloudinary.com/dwl2rfofz/image/upload/v1792471932/books/6ad6f23bcf4d2d6b6a782f78/illustrations/page-3-6961910320204b88b7f5430dcbe592b5.png",
-      },
-      {
-        pageNumber: 4,
-        text: "The next day, they explore the mountain's beautiful trails. Helping each other over rocks and roots, their friendship grows stronger with every step.",
-        imageUrl:
-          "https://res.cloudinary.com/dwl2rfofz/image/upload/v1792472023/books/6ad6f23bcf4d2d6b6a782f78/illustrations/page-4-12b7314f7e3a40ab97d2f682ba8072d9.png",
-      },
-      {
-        pageNumber: 5,
-        text: "Evening falls and they gather around a glowing campfire. Sharing stories and laughter, they feel thankful for the day and the magic of true friendship.",
-        imageUrl:
-          "https://res.cloudinary.com/dwl2rfofz/image/upload/v1792472114/books/6ad6f23bcf4d2d6b6a782f78/illustrations/page-5-f70b982c0d5545c7a8eb6a5d0dfbee54.png",
-      },
-      {
-        pageNumber: 6,
-        text: "Ready to go home, the friends pack up with happy hearts. They return feeling refreshed and grateful for their wonderful mountain adventure and lasting friendship.",
-        imageUrl:
-          "https://res.cloudinary.com/dwl2rfofz/image/upload/v1792472295/books/6ad6f23bcf4d2d6b6a782f78/illustrations/page-6-354bff01c28f491584fe8389762d4060.png",
-      },
-    ],
+    bookPages: DEFAULT_RISHAD_BOOK_PAGES,
+    bookCreatorName: "Tanvir",
+    bookForeword: "Went For A Mountain Traveling At Rishads Birthday For Refreshment And Camping and Hunting",
+    bookBackCoverText: "Thank you for joining Rishad, Tanvir, and Jishad on this memorable mountain getaway. May true friendship always light your journey.",
+    bookFont: "ADVENTURE_BOOK",
+    bookTitlePosition: "Middle",
+    bookLanguage: "English",
     booksPrinted: "3 Copy",
     amount: "$103.80",
     status: "Printing",
@@ -87,6 +95,13 @@ export const TANVIR_ORDERS: OrderItem[] = [
     bookTitle: "Rishad's Mountain Adventure",
     bookCover:
       "https://res.cloudinary.com/dwl2rfofz/image/upload/v1792471748/books/6ad6f23bcf4d2d6b6a782f78/illustrations/page-1-5f03d5cc04024a1c84720458897b7909.png",
+    bookPages: DEFAULT_RISHAD_BOOK_PAGES,
+    bookCreatorName: "Tanvir",
+    bookForeword: "Went For A Mountain Traveling At Rishads Birthday For Refreshment And Camping and Hunting",
+    bookBackCoverText: "Thank you for joining Rishad, Tanvir, and Jishad on this memorable mountain getaway. May true friendship always light your journey.",
+    bookFont: "ADVENTURE_BOOK",
+    bookTitlePosition: "Middle",
+    bookLanguage: "English",
     booksPrinted: "2 Copy",
     amount: "$69.20",
     status: "Printing",
@@ -114,6 +129,13 @@ export const TANVIR_ORDERS: OrderItem[] = [
     bookTitle: "Rishad's Mountain Adventure",
     bookCover:
       "https://res.cloudinary.com/dwl2rfofz/image/upload/v1792471748/books/6ad6f23bcf4d2d6b6a782f78/illustrations/page-1-5f03d5cc04024a1c84720458897b7909.png",
+    bookPages: DEFAULT_RISHAD_BOOK_PAGES,
+    bookCreatorName: "Tanvir",
+    bookForeword: "Went For A Mountain Traveling At Rishads Birthday For Refreshment And Camping and Hunting",
+    bookBackCoverText: "Thank you for joining Rishad, Tanvir, and Jishad on this memorable mountain getaway. May true friendship always light your journey.",
+    bookFont: "ADVENTURE_BOOK",
+    bookTitlePosition: "Middle",
+    bookLanguage: "English",
     booksPrinted: "2 Copy",
     amount: "$69.20",
     status: "Printing",
@@ -336,6 +358,9 @@ export const ordersApi = {
           pageNumber: p.pageNumber || idx + 1,
           text: p.text || "",
           imageUrl: p.imageUrl || p.illustrationUrl || "",
+          kind: p.kind,
+          storyPageNumber: p.storyPageNumber,
+          title: p.title,
         }))
 
         return {
@@ -356,6 +381,13 @@ export const ordersApi = {
             o.book?.pages?.[0]?.imageUrl ||
             "/books/ben.jpg",
           bookPages: bookPages.length > 0 ? bookPages : undefined,
+          bookCreatorName: o.book?.creatorName,
+          bookForeword: o.book?.foreword,
+          bookBackCoverText: o.book?.backCoverText,
+          bookFont: o.book?.font,
+          bookTitlePosition: o.book?.titlePosition,
+          bookLanguage: o.book?.language,
+          pdfUrl: o.book?.pdfUrl,
           booksPrinted: `${o.quantity || 1} Copy`,
           amount: `$${Number(o.totalAmount || (o.quantity * o.pricePerCopy) || 0).toFixed(2)}`,
           status: mapBackendStatusToFrontend(o.status),

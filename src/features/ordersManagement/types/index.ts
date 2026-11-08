@@ -4,6 +4,9 @@ export interface OrderBookPage {
   pageNumber: number
   text: string
   imageUrl: string
+  kind?: string
+  storyPageNumber?: number
+  title?: string
 }
 
 export interface OrderItem {
@@ -32,6 +35,13 @@ export interface OrderItem {
   paymentMethod?: string
   copies?: number
   pricePerCopy?: number
+  bookCreatorName?: string
+  bookForeword?: string
+  bookBackCoverText?: string
+  bookFont?: string
+  bookTitlePosition?: "Top" | "Middle" | "Bottom"
+  bookLanguage?: string
+  pdfUrl?: string
 }
 
 export interface OrderMetrics {
