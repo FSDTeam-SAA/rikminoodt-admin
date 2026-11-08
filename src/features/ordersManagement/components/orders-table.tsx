@@ -2,11 +2,13 @@
 
 import * as React from "react"
 import Link from "next/link"
-import { Search, ChevronLeft, ChevronRight, Loader2, Trash2 } from "lucide-react"
+import { Search, ChevronLeft, ChevronRight, Loader2, Trash2, Eye } from "lucide-react"
 import { useOrders, useDeleteOrder } from "../hooks"
 import { OrderItem, OrderStatus } from "../types"
 import { useDebounce } from "@/hooks/use-debounce"
 import { toast } from "sonner"
+import { DeleteOrderModal } from "./delete-order-modal"
+import { CustomerAvatar } from "@/components/shared/customer-avatar"
 
 const statusTabs: OrderStatus[] = [
   "All",
@@ -30,24 +32,27 @@ export function OrdersTable() {
   })
 
   const deleteOrderMutation = useDeleteOrder()
+  const [orderToDelete, setOrderToDelete] = React.useState<OrderItem | null>(null)
 
   const orders = data?.orders || []
   const totalResults = data?.total || 120
 
-  const handleDelete = (orderId: string, e: React.MouseEvent) => {
+  const handleOpenDeleteModal = (order: OrderItem, e: React.MouseEvent) => {
     e.stopPropagation()
     e.preventDefault()
-    toast.warning("Delete Order", {
-      description: `Are you sure you want to remove ${orderId}?`,
-      action: {
-        label: "Confirm",
-        onClick: () => {
-          deleteOrderMutation.mutate(orderId, {
-            onSuccess: () => {
-              toast.success(`Order ${orderId} removed successfully`)
-            },
-          })
-        },
+    setOrderToDelete(order)
+  }
+
+  const handleConfirmDelete = () => {
+    if (!orderToDelete) return
+    const id = orderToDelete.id
+    deleteOrderMutation.mutate(id, {
+      onSuccess: () => {
+        toast.success(`Order ${id} removed successfully`)
+        setOrderToDelete(null)
+      },
+      onError: () => {
+        toast.error("Failed to delete order. Please try again.")
       },
     })
   }
@@ -114,11 +119,10 @@ export function OrdersTable() {
                   setSelectedStatus(tab)
                   setCurrentPage(1)
                 }}
-                className={`px-3 py-1.5 rounded-lg text-base font-medium transition-all cursor-pointer shrink-0 ${
-                  isActive
-                    ? "bg-[#E88DA0] text-white shadow-xs font-semibold"
-                    : "text-neutral-500 hover:text-gray-900 hover:bg-slate-50"
-                }`}
+                className={`px-3 py-1.5 rounded-lg text-base font-medium transition-all cursor-pointer shrink-0 ${isActive
+                  ? "bg-[#E88DA0] text-white shadow-xs font-semibold"
+                  : "text-neutral-500 hover:text-gray-900 hover:bg-slate-50"
+                  }`}
               >
                 {tab}
               </button>
@@ -175,10 +179,10 @@ export function OrdersTable() {
                     href={orderLink}
                     className="col-span-2 flex items-center gap-3 pl-2 group cursor-pointer"
                   >
-                    <img
+                    <CustomerAvatar
                       src={order.customerAvatar}
-                      alt={order.customerName}
-                      className="w-9 h-9 rounded-full object-cover shrink-0 border border-slate-100 group-hover:ring-2 group-hover:ring-[#E88DA0]/50 transition-all"
+                      name={order.customerName}
+                      size="md"
                     />
                     <span className="text-zinc-800 font-normal truncate group-hover:text-[#E88DA0] transition-colors">
                       {order.customerName}
@@ -219,7 +223,7 @@ export function OrdersTable() {
                       title={`View details of ${order.id}`}
                     >
                       {/* Concentric circles target action icon from Figma */}
-                      <svg
+                      {/* <svg
                         className="w-3.5 h-3.5 text-indigo-500 group-hover:scale-110 transition-transform"
                         viewBox="0 0 16 16"
                         fill="none"
@@ -238,12 +242,13 @@ export function OrdersTable() {
                           r="2.5"
                           fill="currentColor"
                         />
-                      </svg>
+                      </svg> */}
+                      <Eye className="w-3.5 h-3.5 text-indigo-500 group-hover:scale-110 transition-transform" />
                     </Link>
 
                     {/* Delete / Trash Action Icon (red) */}
                     <button
-                      onClick={(e) => handleDelete(order.id, e)}
+                      onClick={(e) => handleOpenDeleteModal(order, e)}
                       className="w-6 h-6 bg-red-500/10 hover:bg-red-500/25 rounded-full flex items-center justify-center transition-all cursor-pointer group"
                       title={`Delete order ${order.id}`}
                     >
@@ -280,11 +285,10 @@ export function OrdersTable() {
             <button
               key={pg}
               onClick={() => setCurrentPage(pg)}
-              className={`w-10 h-10 rounded-sm flex items-center justify-center text-base font-normal transition-colors cursor-pointer ${
-                currentPage === pg
-                  ? "bg-[#E88DA0] text-white font-semibold shadow-2xs"
-                  : "border border-neutral-300 text-neutral-400 bg-white hover:border-neutral-400"
-              }`}
+              className={`w-10 h-10 rounded-sm flex items-center justify-center text-base font-normal transition-colors cursor-pointer ${currentPage === pg
+                ? "bg-[#E88DA0] text-white font-semibold shadow-2xs"
+                : "border border-neutral-300 text-neutral-400 bg-white hover:border-neutral-400"
+                }`}
             >
               {pg}
             </button>
@@ -301,6 +305,17 @@ export function OrdersTable() {
           </button>
         </div>
       </div>
+
+      {/* Centered Professional Delete Confirmation Modal */}
+      <DeleteOrderModal
+        open={Boolean(orderToDelete)}
+        onOpenChange={(open) => {
+          if (!open) setOrderToDelete(null)
+        }}
+        order={orderToDelete}
+        onConfirm={handleConfirmDelete}
+        isDeleting={deleteOrderMutation.isPending}
+      />
     </div>
   )
 }

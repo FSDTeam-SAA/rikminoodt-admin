@@ -9,6 +9,7 @@ import {
   Star,
   Trash2,
   Filter,
+  Eye,
 } from "lucide-react"
 import { useReviews, useDeleteReview } from "../hooks"
 import { ReviewItem, ReviewStatus, RatingFilter } from "../types"
@@ -157,11 +158,10 @@ export function ReviewsTable() {
                     setSelectedStatus(tab)
                     setCurrentPage(1)
                   }}
-                  className={`px-3 py-1.5 rounded-lg text-base font-medium transition-all cursor-pointer shrink-0 ${
-                    isActive
-                      ? "bg-[#E88DA0] text-white shadow-xs font-semibold"
-                      : "text-neutral-500 hover:text-gray-900 hover:bg-slate-50"
-                  }`}
+                  className={`px-3 py-1.5 rounded-lg text-base font-medium transition-all cursor-pointer shrink-0 ${isActive
+                    ? "bg-[#E88DA0] text-white shadow-xs font-semibold"
+                    : "text-neutral-500 hover:text-gray-900 hover:bg-slate-50"
+                    }`}
                 >
                   {tab}
                 </button>
@@ -260,7 +260,7 @@ export function ReviewsTable() {
                     className="w-6 h-6 bg-blue-400/10 hover:bg-blue-400/25 rounded-full flex items-center justify-center transition-all cursor-pointer group"
                     title={`View review ${review.id}`}
                   >
-                    <svg
+                    {/* <svg
                       className="w-3.5 h-3.5 text-indigo-500 group-hover:scale-110 transition-transform"
                       viewBox="0 0 16 16"
                       fill="none"
@@ -279,7 +279,9 @@ export function ReviewsTable() {
                         r="2.5"
                         fill="currentColor"
                       />
-                    </svg>
+                    </svg> */}
+
+                    <Eye className="w-3.5 h-3.5 text-indigo-500 group-hover:scale-110 transition-transform" />
                   </button>
 
                   {/* Delete Button */}
@@ -319,11 +321,10 @@ export function ReviewsTable() {
             <button
               key={pg}
               onClick={() => setCurrentPage(pg)}
-              className={`w-10 h-10 rounded-sm flex items-center justify-center text-base font-normal transition-colors cursor-pointer ${
-                currentPage === pg
-                  ? "bg-[#E88DA0] text-white font-semibold shadow-2xs"
-                  : "border border-neutral-300 text-neutral-400 bg-white hover:border-neutral-400"
-              }`}
+              className={`w-10 h-10 rounded-sm flex items-center justify-center text-base font-normal transition-colors cursor-pointer ${currentPage === pg
+                ? "bg-[#E88DA0] text-white font-semibold shadow-2xs"
+                : "border border-neutral-300 text-neutral-400 bg-white hover:border-neutral-400"
+                }`}
             >
               {pg}
             </button>

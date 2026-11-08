@@ -16,6 +16,7 @@ import { OrderItem } from "../types"
 import { findOrderById } from "../api"
 import { toast } from "sonner"
 import { BookReaderModal } from "@/features/userManagement/components/book-reader-modal"
+import { CustomerAvatar } from "@/components/shared/customer-avatar"
 
 interface OrderDetailsViewProps {
   orderId?: string
@@ -131,13 +132,10 @@ export function OrderDetailsView({ orderId = "ORD-258" }: OrderDetailsViewProps)
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           {/* Avatar + Customer Name + Email */}
           <div className="flex items-center gap-4">
-            <img
-              src={
-                activeOrder.customerAvatar ||
-                "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80"
-              }
-              alt={activeOrder.customerName}
-              className="w-14 h-14 rounded-full object-cover border border-slate-100 shrink-0"
+            <CustomerAvatar
+              src={activeOrder.customerAvatar}
+              name={activeOrder.customerName}
+              size="lg"
             />
             <div className="flex flex-col justify-start items-start gap-0.5">
               <span className="text-gray-900 text-2xl font-semibold">

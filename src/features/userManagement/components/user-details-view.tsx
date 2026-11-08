@@ -16,6 +16,7 @@ import { useRouter } from "next/navigation"
 import { toast } from "sonner"
 import { findUserBySlugOrId, usersApi } from "../api"
 import { BookReaderModal } from "./book-reader-modal"
+import { CustomerAvatar } from "@/components/shared/customer-avatar"
 
 interface UserDetailsViewProps {
   userId?: string
@@ -118,10 +119,10 @@ export function UserDetailsView({ userId = "usr-1", onBack }: UserDetailsViewPro
         <div className="bg-white rounded-lg p-5 border border-slate-100 shadow-xs flex flex-col justify-between gap-5">
           <div className="flex items-start justify-between gap-3">
             <div className="flex items-center gap-4">
-              <img
+              <CustomerAvatar
                 src={activeUser.avatar}
-                alt={activeUser.name}
-                className="w-14 h-14 rounded-full object-cover border border-slate-100 shrink-0"
+                name={activeUser.name}
+                size="lg"
               />
               <div className="flex flex-col justify-start items-start gap-0.5">
                 <span className="text-gray-900 text-2xl font-semibold">

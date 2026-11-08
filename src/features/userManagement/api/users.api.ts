@@ -7,8 +7,7 @@ import {
   UserOrder,
 } from "../types"
 
-const DEFAULT_AVATAR =
-  "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80"
+const DEFAULT_AVATAR = "/no-image.png"
 
 export function slugifyUsername(name: string): string {
   return (name || "")

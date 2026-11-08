@@ -8,13 +8,14 @@ export const initialOrderMetrics: OrderMetrics = {
   printingRevenue: "$ 0",
 }
 
+const DEFAULT_CUSTOMER_AVATAR = "/no-image.png"
+
 export const TANVIR_ORDERS: OrderItem[] = [
   {
     id: "ORD-B257",
     _id: "6ad730133e9c3b785729b257",
     customerName: "Tanvir Ahmmed",
-    customerAvatar:
-      "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80",
+    customerAvatar: DEFAULT_CUSTOMER_AVATAR,
     email: "tanvir@gmail.com",
     memberSince: "10/19/2026",
     bookId: "6ad6f23bcf4d2d6b6a782f78",
@@ -79,8 +80,7 @@ export const TANVIR_ORDERS: OrderItem[] = [
     id: "ORD-557E",
     _id: "6ad71110db2784a67c59557e",
     customerName: "Tanvir Ahmmed",
-    customerAvatar:
-      "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80",
+    customerAvatar: DEFAULT_CUSTOMER_AVATAR,
     email: "tanvir@gmail.com",
     memberSince: "10/19/2026",
     bookId: "6ad6f23bcf4d2d6b6a782f78",
@@ -107,8 +107,7 @@ export const TANVIR_ORDERS: OrderItem[] = [
     id: "ORD-5517",
     _id: "6ad70debdb2784a67c595517",
     customerName: "Tanvir Ahmmed",
-    customerAvatar:
-      "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80",
+    customerAvatar: DEFAULT_CUSTOMER_AVATAR,
     email: "tanvir@gmail.com",
     memberSince: "10/19/2026",
     bookId: "6ad6f23bcf4d2d6b6a782f78",
@@ -240,9 +239,7 @@ export const ordersApi = {
         const orders: OrderItem[] = rawRows.map((o: any) => ({
           id: o._id ? `ORD-${o._id.toString().slice(-4).toUpperCase()}` : "ORD-000",
           customerName: o.user?.name || "Customer",
-          customerAvatar:
-            o.user?.profileImage ||
-            "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80",
+          customerAvatar: o.user?.profileImage || DEFAULT_CUSTOMER_AVATAR,
           email: o.user?.email || "customer@example.com",
           bookTitle: o.book?.theme ? o.book.theme.replace(/_/g, " ") : "Custom Storybook",
           bookCover: o.book?.coverImageUrl || "/books/ben.jpg",
@@ -345,9 +342,7 @@ export const ordersApi = {
           id: o._id ? `ORD-${o._id.toString().slice(-4).toUpperCase()}` : identifier,
           _id: o._id,
           customerName: o.user?.name || "Customer",
-          customerAvatar:
-            o.user?.profileImage ||
-            "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80",
+          customerAvatar: o.user?.profileImage || DEFAULT_CUSTOMER_AVATAR,
           email: o.user?.email || "customer@example.com",
           memberSince: o.user?.createdAt
             ? new Date(o.user.createdAt).toLocaleDateString("en-US")

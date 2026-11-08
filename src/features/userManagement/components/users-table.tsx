@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { Search, ChevronLeft, ChevronRight, Loader2 } from "lucide-react"
+import { Search, ChevronLeft, ChevronRight, Loader2, Eye } from "lucide-react"
 import { useUsers } from "../hooks"
 import { UserItem } from "../types"
 import { useDebounce } from "@/hooks/use-debounce"
@@ -10,6 +10,7 @@ import { toast } from "sonner"
 
 import { slugifyUsername } from "../api"
 import Link from "next/link"
+import { CustomerAvatar } from "@/components/shared/customer-avatar"
 
 interface UsersTableProps {
   onSelectUser?: (userId: string) => void
@@ -90,10 +91,10 @@ export function UsersTable({ onSelectUser }: UsersTableProps) {
                   href={`/user-management/${slugifyUsername(user.name)}`}
                   className="col-span-3 flex items-center gap-3 pl-2 group cursor-pointer"
                 >
-                  <img
+                  <CustomerAvatar
                     src={user.avatar}
-                    alt={user.name}
-                    className="w-9 h-9 rounded-full object-cover shrink-0 border border-slate-100 group-hover:ring-2 group-hover:ring-[#E88DA0]/50 transition-all"
+                    name={user.name}
+                    size="md"
                   />
                   <span className="text-zinc-800 font-normal truncate group-hover:text-[#E88DA0] transition-colors">
                     {user.name}
@@ -128,7 +129,7 @@ export function UsersTable({ onSelectUser }: UsersTableProps) {
                     title={`View ${user.name}`}
                   >
                     {/* Concentric circles target action icon from Figma */}
-                    <svg
+                    {/* <svg
                       className="w-3.5 h-3.5 text-indigo-500 group-hover:scale-110 transition-transform"
                       viewBox="0 0 16 16"
                       fill="none"
@@ -147,7 +148,8 @@ export function UsersTable({ onSelectUser }: UsersTableProps) {
                         r="2.5"
                         fill="currentColor"
                       />
-                    </svg>
+                    </svg> */}
+                    <Eye className="w-3.5 h-3.5 text-indigo-500 group-hover:scale-110 transition-transform" />
                   </Link>
                 </div>
               </div>
@@ -179,11 +181,10 @@ export function UsersTable({ onSelectUser }: UsersTableProps) {
             <button
               key={pg}
               onClick={() => setCurrentPage(pg)}
-              className={`w-10 h-10 rounded-sm flex items-center justify-center text-base font-normal transition-colors cursor-pointer ${
-                currentPage === pg
-                  ? "bg-[#E88DA0] text-white font-semibold shadow-2xs"
-                  : "border border-neutral-300 text-neutral-400 bg-white hover:border-neutral-400"
-              }`}
+              className={`w-10 h-10 rounded-sm flex items-center justify-center text-base font-normal transition-colors cursor-pointer ${currentPage === pg
+                ? "bg-[#E88DA0] text-white font-semibold shadow-2xs"
+                : "border border-neutral-300 text-neutral-400 bg-white hover:border-neutral-400"
+                }`}
             >
               {pg}
             </button>
