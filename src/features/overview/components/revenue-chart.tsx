@@ -131,7 +131,7 @@ export function RevenueChart() {
                 style={{ top: `${topPercent}%` }}
               >
                 <span className="w-12 text-right text-slate-400 text-xs font-normal">
-                  ${tick.toLocaleString()}
+                  €{tick.toLocaleString()}
                 </span>
                 <div className="flex-1 h-px bg-zinc-100" />
               </div>
@@ -167,7 +167,7 @@ export function RevenueChart() {
                       {hoveredData?.month === item.month &&
                         hoveredData.type === "generation" && (
                           <div className="absolute -top-8 left-1/2 -translate-x-1/2 bg-gray-900 text-white text-[11px] font-bold px-2 py-0.5 rounded-md shadow-md pointer-events-none whitespace-nowrap z-20">
-                            Generation: ${item.generation.toLocaleString()}
+                            Generation: €{item.generation.toLocaleString()}
                           </div>
                         )}
                     </div>
@@ -188,7 +188,7 @@ export function RevenueChart() {
                       {hoveredData?.month === item.month &&
                         hoveredData.type === "printing" && (
                           <div className="absolute -top-8 left-1/2 -translate-x-1/2 bg-gray-900 text-white text-[11px] font-bold px-2 py-0.5 rounded-md shadow-md pointer-events-none whitespace-nowrap z-20">
-                            Printing: ${item.printing.toLocaleString()}
+                            Printing: €{item.printing.toLocaleString()}
                           </div>
                         )}
                     </div>

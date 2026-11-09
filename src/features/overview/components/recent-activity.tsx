@@ -2,7 +2,7 @@
 
 import * as React from "react"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
-import { DollarSign, Image as ImageIcon, FileText, UserPlus } from "lucide-react"
+import { Euro, Image as ImageIcon, FileText, UserPlus } from "lucide-react"
 import { toast } from "sonner"
 
 interface ActivityItem {
@@ -18,10 +18,10 @@ interface ActivityItem {
 const activities: ActivityItem[] = [
   {
     id: "act-1",
-    title: "Escrow Deposit Confirmed ($450,000)",
+    title: "Escrow Deposit Confirmed (€450,000)",
     description: "Funds received for Marina Bay Horizon Unit 14B.",
     time: "24m ago",
-    icon: DollarSign,
+    icon: Euro,
     iconColor: "text-emerald-500 bg-emerald-500/10",
     type: "Financial",
   },

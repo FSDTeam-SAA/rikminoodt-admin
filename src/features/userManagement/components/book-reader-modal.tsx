@@ -21,6 +21,8 @@ import jsPDF from "jspdf"
 import { GeneratedBook, UserOrder } from "../types"
 import { getBookFontFamily } from "@/lib/book-font"
 import { BookPageDecorations } from "./book-page-decorations"
+import api from "@/lib/api"
+import { getAccessToken } from "@/lib/auth-storage"
 
 export interface BookReaderModalProps {
   isOpen: boolean
@@ -91,21 +93,55 @@ export function BookReaderModal({
   const [isCompact, setIsCompact] = React.useState(false)
   const [zoom, setZoom] = React.useState(1)
   const [isDownloading, setIsDownloading] = React.useState(false)
+  const [liveBook, setLiveBook] = React.useState<any>(null)
+  const [isLoadingBook, setIsLoadingBook] = React.useState(false)
 
-  const displayTitle = book?.title || "Personalized Storybook"
-  const bookFontFamily = getBookFontFamily(book?.font)
+  // Fetch live book from API: GET /api/v1/books/:id whenever modal opens
+  React.useEffect(() => {
+    if (!isOpen || !book) {
+      setLiveBook(null)
+      return
+    }
+    const targetId = book.id || book._id
+    if (!targetId || !/^[0-9a-fA-F]{24}$/.test(targetId)) return
+
+    let isMounted = true
+    const fetchLiveBook = async () => {
+      try {
+        setIsLoadingBook(true)
+        const res = await api.get(`/books/${targetId}`)
+        if (isMounted && res.data?.data) {
+          setLiveBook(res.data.data)
+        }
+      } catch (err) {
+        console.warn("Could not fetch live book from /books/:id:", err)
+      } finally {
+        if (isMounted) setIsLoadingBook(false)
+      }
+    }
+
+    fetchLiveBook()
+    return () => {
+      isMounted = false
+    }
+  }, [isOpen, book?.id, book?._id])
+
+  // Merge live book data with fallback prop data
+  const effectiveBook = liveBook || book
+  const displayTitle = effectiveBook?.title || "Personalized Storybook"
+  const bookFontFamily = getBookFontFamily(effectiveBook?.font)
 
   const coverTitlePosition =
-    book?.titlePosition === "Middle"
+    effectiveBook?.titlePosition === "Middle"
       ? "top-1/2 -translate-y-1/2"
-      : book?.titlePosition === "Bottom"
+      : effectiveBook?.titlePosition === "Bottom"
         ? "bottom-16"
         : "top-7"
 
   // Prepare reader pages matching the generated PDF & website book design
   const { activePages, storyPages, coverImg, welcomeText, finalText, readerContentKey } =
     React.useMemo(() => {
-      const suppliedPages = (book?.pages || []) as any[]
+      const suppliedPages = (effectiveBook?.pages || []) as any[]
       const hasSpecialPages = suppliedPages.some((p) => p.kind)
       const filteredStoryPages = (
         hasSpecialPages
@@ -130,19 +166,19 @@ export function BookReaderModal({
         coverPage?.imageUrl ||
         coverPage?.illustrationUrl ||
         coverPage?.image ||
-        book?.coverImageUrl ||
-        book?.cover ||
+        effectiveBook?.coverImageUrl ||
+        effectiveBook?.cover ||
         filteredStoryPages[0]?.image ||
         "/books/ben.jpg"
 
       const resolvedWelcomeText =
         welcomePage?.text ||
-        book?.foreword ||
+        effectiveBook?.foreword ||
         `Welcome to ${displayTitle}. This magical adventure was created especially for you.`
 
       const resolvedFinalText =
         finalPage?.text ||
-        book?.backCoverText ||
+        effectiveBook?.backCoverText ||
         "Thank you for sharing this magical adventure. May the story stay with you for years to come."
 
       const pagesList: ReaderBookPage[] = [
@@ -198,7 +234,7 @@ export function BookReaderModal({
         finalText: resolvedFinalText,
         readerContentKey: key,
       }
-    }, [book, displayTitle])
+    }, [effectiveBook, displayTitle])
 
   const initialReaderPage = React.useMemo(() => {
     if (!initialPageNumber) return 0
@@ -221,13 +257,14 @@ export function BookReaderModal({
 
   // Find if this book was ordered for print
   const relatedOrders = React.useMemo(() => {
-    if (!book) return []
+    if (!effectiveBook) return []
     return orders.filter(
       (o) =>
-        o.bookId === book.id ||
-        o.bookTitle?.toLowerCase().trim() === book.title?.toLowerCase().trim()
+        o.bookId === effectiveBook.id ||
+        o.bookId === effectiveBook._id ||
+        o.bookTitle?.toLowerCase().trim() === effectiveBook.title?.toLowerCase().trim()
     )
-  }, [book, orders])
+  }, [effectiveBook, orders])
 
   const totalCopiesOrdered = React.useMemo(
     () => relatedOrders.reduce((sum, o) => sum + (o.copies || 0), 0),
@@ -288,19 +325,62 @@ export function BookReaderModal({
     return () => window.removeEventListener("keydown", handleKeyDown)
   }, [isOpen, onClose, canGoPrev, canGoNext, flipPrev, flipNext])
 
-  // Download PDF Handler: Uses backend PDF or pre-generated Cloudinary PDF, with client-side fallback
+  // Download PDF Handler: Calls backend API GET /api/v1/books/:id/download (matching website behavior)
   const handleDownloadPdf = async () => {
     if (isDownloading) return
     setIsDownloading(true)
     toast.info("Preparing your PDF...", {
-      description: "Generating high-resolution storybook pages.",
+      description: "Calling backend PDF generation API...",
     })
 
     try {
-      // 1. Direct PDF URL
-      if (book?.pdfUrl) {
+      const targetBookId = effectiveBook?.id || effectiveBook?._id
+      const token = getAccessToken()
+      const apiBase =
+        process.env.NEXT_PUBLIC_BACKEND_API_URL ||
+        process.env.NEXT_PUBLIC_API_URL ||
+        "https://api.boekerello.com/api/v1"
+
+      // 1. Direct call to backend PDF download endpoint: GET /books/:id/download
+      if (targetBookId && /^[0-9a-fA-F]{24}$/.test(targetBookId)) {
+        try {
+          const headers: Record<string, string> = {}
+          if (token) headers["Authorization"] = `Bearer ${token}`
+
+          const res = await fetch(
+            `${apiBase.replace(/\/+$/, "")}/books/${encodeURIComponent(targetBookId)}/download?refresh=${Date.now()}`,
+            {
+              headers,
+              cache: "no-store",
+            }
+          )
+
+          if (res.ok) {
+            const blob = await res.blob()
+            const objectUrl = URL.createObjectURL(blob)
+            const link = document.createElement("a")
+            link.href = objectUrl
+            const safeName = displayTitle.replace(/[^a-zA-Z0-9_-]/g, "_") || "storybook"
+            link.download = `${safeName}.pdf`
+            document.body.appendChild(link)
+            link.click()
+            document.body.removeChild(link)
+            URL.revokeObjectURL(objectUrl)
+            toast.success("PDF Downloaded successfully!")
+            return
+          } else {
+            const errJson = await res.json().catch(() => null)
+            console.warn("Backend PDF download returned non-ok:", errJson)
+          }
+        } catch (apiErr) {
+          console.warn("Backend PDF download fetch error:", apiErr)
+        }
+      }
+
+      // 2. Direct Cloudinary PDF URL if available
+      if (effectiveBook?.pdfUrl) {
         const link = document.createElement("a")
-        link.href = book.pdfUrl
+        link.href = effectiveBook.pdfUrl
         link.target = "_blank"
         link.download = `${displayTitle.replace(/[^a-zA-Z0-9_-]/g, "_")}.pdf`
         document.body.appendChild(link)
@@ -310,7 +390,7 @@ export function BookReaderModal({
         return
       }
 
-      // 2. High-quality client-side generation
+      // 3. Fallback client-side generation if server API is unreachable or offline mock
       const loadImageDataUrl = async (url: string): Promise<string | null> => {
         if (!url) return null
         try {
@@ -379,13 +459,13 @@ export function BookReaderModal({
       const splitWelcome = doc.splitTextToSize(welcomeText, pageWidth - 50)
       doc.text(splitWelcome, pageWidth / 2, pageHeight / 2 - 20, { align: "center" })
 
-      if (book?.creatorName) {
+      if (effectiveBook?.creatorName) {
         doc.setFontSize(11)
         doc.setTextColor(81, 66, 86)
         doc.text("This magical children's book was made by:", 25, pageHeight - 50)
         doc.setFont("times", "bold")
         doc.setFontSize(13)
-        doc.text(book.creatorName, 25, pageHeight - 42)
+        doc.text(effectiveBook.creatorName, 25, pageHeight - 42)
         doc.setDrawColor(81, 66, 86)
         doc.setLineWidth(0.3)
         doc.line(25, pageHeight - 40, 80, pageHeight - 40)
@@ -476,21 +556,27 @@ export function BookReaderModal({
                 >
                   {displayTitle}
                 </h2>
-                {book.status && (
+                {effectiveBook.status && (
                   <span className="px-2 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-100 text-emerald-800 border border-emerald-300">
-                    {book.status}
+                    {effectiveBook.status}
+                  </span>
+                )}
+                {isLoadingBook && (
+                  <span className="flex items-center gap-1 text-[11px] text-amber-700 bg-amber-50 px-2 py-0.5 rounded-md border border-amber-200">
+                    <Loader2 className="w-3 h-3 animate-spin text-amber-600" />
+                    Syncing...
                   </span>
                 )}
               </div>
               <div className="flex items-center gap-3 text-xs text-stone-500 font-medium flex-wrap mt-0.5">
-                {book.creatorName && (
+                {effectiveBook.creatorName && (
                   <span className="flex items-center gap-1">
                     <User className="w-3 h-3" />
-                    By {book.creatorName}
+                    By {effectiveBook.creatorName}
                   </span>
                 )}
-                {book.ageCategory && <span>Age: {book.ageCategory}</span>}
-                {book.language && <span>Lang: {book.language}</span>}
+                {effectiveBook.ageCategory && <span>Age: {effectiveBook.ageCategory}</span>}
+                {effectiveBook.language && <span>Lang: {effectiveBook.language}</span>}
                 {totalCopiesOrdered > 0 && (
                   <span className="flex items-center gap-1 text-amber-700 bg-amber-50 px-2 py-0.5 rounded-md font-semibold border border-amber-200">
                     <ShoppingBag className="w-3 h-3 text-amber-600" />
@@ -534,6 +620,15 @@ export function BookReaderModal({
           ref={stageRef}
           className="absolute inset-x-0 top-[56px] bottom-[76px] flex items-center justify-center overflow-hidden px-4 py-1.5 sm:bottom-[84px] sm:px-7"
         >
+          {isLoadingBook && (
+            <div className="absolute inset-0 z-20 flex flex-col items-center justify-center bg-[#FFF8F0]/85 backdrop-blur-xs gap-2">
+              <Loader2 className="w-8 h-8 animate-spin text-[#DE778C]" />
+              <span className="font-serif text-sm font-semibold text-[#514256]">
+                Syncing live book pages...
+              </span>
+            </div>
+          )}
+
           <div
             className="origin-center transition-transform duration-200"
             style={{ transform: `scale(${zoom})` }}
@@ -601,11 +696,11 @@ export function BookReaderModal({
                           style={{ fontFamily: bookFontFamily }}
                           className="text-[clamp(0.55rem,1.1vw,0.8rem)] text-[#302735]"
                         >
-                          {book?.language?.toLowerCase().includes("nl") ||
-                          book?.language?.toLowerCase().includes("dutch")
+                          {effectiveBook?.language?.toLowerCase().includes("nl") ||
+                          effectiveBook?.language?.toLowerCase().includes("dutch")
                             ? "Dit magische kinderboek is gemaakt door:"
-                            : book?.language?.toLowerCase().includes("fr") ||
-                                book?.language?.toLowerCase().includes("french")
+                            : effectiveBook?.language?.toLowerCase().includes("fr") ||
+                                effectiveBook?.language?.toLowerCase().includes("french")
                               ? "Ce merveilleux livre pour enfants a été créé par :"
                               : "This magical children's book was made by:"}
                         </p>
@@ -613,7 +708,7 @@ export function BookReaderModal({
                           style={{ fontFamily: bookFontFamily }}
                           className="mt-3 block border-b border-dashed border-[#514256] pb-1 text-[clamp(0.7rem,1.35vw,1rem)] font-semibold text-[#302735]"
                         >
-                          {book?.creatorName || " "}
+                          {effectiveBook?.creatorName || " "}
                         </span>
                       </div>
                     </div>

@@ -218,8 +218,8 @@ export function OrderDetailsView({ orderId = "ORD-258" }: OrderDetailsViewProps)
                 <div
                   key={`label-${step.key}`}
                   className={`text-center font-normal transition-colors ${isCurrent
-                      ? "text-blue-500 font-semibold"
-                      : "text-slate-400"
+                    ? "text-blue-500 font-semibold"
+                    : "text-slate-400"
                     }`}
                   style={{ width: "90px" }}
                 >
@@ -299,8 +299,8 @@ export function OrderDetailsView({ orderId = "ORD-258" }: OrderDetailsViewProps)
                             type="button"
                             onClick={() => handleStatusSelect(option)}
                             className={`w-full px-3 py-2 text-left text-sm rounded-lg transition-colors cursor-pointer font-medium ${isSelected
-                                ? "bg-[#E88DA0] text-white shadow-xs font-semibold"
-                                : "text-gray-700 hover:bg-slate-50 hover:text-gray-900"
+                              ? "bg-[#E88DA0] text-white shadow-xs font-semibold"
+                              : "text-gray-700 hover:bg-slate-50 hover:text-gray-900"
                               }`}
                           >
                             {option}
@@ -323,8 +323,20 @@ export function OrderDetailsView({ orderId = "ORD-258" }: OrderDetailsViewProps)
               </div>
             </div>
 
+
+
             {/* Order Details Key-Value Rows */}
             <div className="flex flex-col divide-y divide-stone-200/80 pt-1">
+
+
+              <div className="py-3 flex items-center justify-between text-base">
+                <span className="text-stone-900 font-semibold">Name:</span>
+                <span className="text-slate-600 font-normal">
+                  {activeOrder.customerName || activeOrder.name || "N/A"}
+                </span>
+              </div>
+
+
               {/* Order ID */}
               <div className="py-3 flex items-center justify-between text-base">
                 <span className="text-stone-900 font-semibold">Order ID:</span>
@@ -365,7 +377,7 @@ export function OrderDetailsView({ orderId = "ORD-258" }: OrderDetailsViewProps)
               <div className="py-3 flex items-center justify-between text-base">
                 <span className="text-stone-900 font-semibold">Total amount:</span>
                 <span className="text-stone-900 font-semibold text-lg">
-                  {activeOrder.amount || "$0.00"}
+                  {activeOrder.amount ? activeOrder.amount.replace(/^\$/, "€") : "€0.00"}
                 </span>
               </div>
             </div>
@@ -434,6 +446,7 @@ export function OrderDetailsView({ orderId = "ORD-258" }: OrderDetailsViewProps)
         initialPageNumber={readerInitialPage}
         book={{
           id: activeOrder.bookId || activeOrder.id,
+          _id: activeOrder.bookId,
           title: activeOrder.bookTitle,
           cover: activeOrder.bookCover || "",
           coverImageUrl: activeOrder.bookCover || "",

@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { Users, BookOpen, Printer, DollarSign } from "lucide-react"
+import { Users, BookOpen, Printer, Euro } from "lucide-react"
 import { useDashboardCards } from "../hooks/use-dashboard"
 
 export interface KpiCardConfig {
@@ -49,14 +49,15 @@ const kpiConfigs: KpiCardConfig[] = [
     iconColor: "text-blue-400",
     borderColor: "border-blue-200/50",
   },
+
   {
     id: "total-revenue",
     title: "Total Revenue",
     getValue: (data) =>
       data?.totalRevenue != null
-        ? `$ ${data.totalRevenue.toLocaleString()}`
-        : "$ 0",
-    icon: DollarSign,
+        ? `€ ${data.totalRevenue.toLocaleString()}`
+        : "€ 0",
+    icon: Euro,
     iconBoxBg: "bg-sky-400/10",
     iconColor: "text-sky-400",
     borderColor: "border-sky-200/50",
@@ -66,9 +67,9 @@ const kpiConfigs: KpiCardConfig[] = [
     title: "Generation Revenue",
     getValue: (data) =>
       data?.generationRevenue != null
-        ? `$ ${data.generationRevenue.toLocaleString()}`
-        : "$ 0",
-    icon: DollarSign,
+        ? `€ ${data.generationRevenue.toLocaleString()}`
+        : "€ 0",
+    icon: Euro,
     iconBoxBg: "bg-emerald-400/10",
     iconColor: "text-emerald-500",
     borderColor: "border-emerald-200/50",
@@ -78,8 +79,8 @@ const kpiConfigs: KpiCardConfig[] = [
     title: "Printing Revenue",
     getValue: (data) =>
       data?.printingRevenue != null
-        ? `$ ${data.printingRevenue.toLocaleString()}`
-        : "$ 0",
+        ? `€ ${data.printingRevenue.toLocaleString()}`
+        : "€ 0",
     icon: Printer,
     iconBoxBg: "bg-purple-400/10",
     iconColor: "text-purple-400",

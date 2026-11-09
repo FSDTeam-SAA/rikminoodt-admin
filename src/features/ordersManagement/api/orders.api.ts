@@ -5,7 +5,7 @@ export const initialOrderMetrics: OrderMetrics = {
   totalOrders: "0",
   totalPendingOrders: "0",
   totalBooksDelivered: "0",
-  printingRevenue: "$ 0",
+  printingRevenue: "€ 0",
 }
 
 const DEFAULT_CUSTOMER_AVATAR = "/no-image.png"
@@ -69,7 +69,7 @@ export const TANVIR_ORDERS: OrderItem[] = [
     bookTitlePosition: "Middle",
     bookLanguage: "English",
     booksPrinted: "3 Copy",
-    amount: "$103.80",
+    amount: "€103.80",
     status: "Printing",
     rawStatus: "PRINTING",
     orderDate: "10/20/2026",
@@ -103,7 +103,7 @@ export const TANVIR_ORDERS: OrderItem[] = [
     bookTitlePosition: "Middle",
     bookLanguage: "English",
     booksPrinted: "2 Copy",
-    amount: "$69.20",
+    amount: "€69.20",
     status: "Printing",
     rawStatus: "PRINTING",
     orderDate: "10/20/2026",
@@ -137,7 +137,7 @@ export const TANVIR_ORDERS: OrderItem[] = [
     bookTitlePosition: "Middle",
     bookLanguage: "English",
     booksPrinted: "2 Copy",
-    amount: "$69.20",
+    amount: "€69.20",
     status: "Printing",
     rawStatus: "PRINTING",
     orderDate: "10/20/2026",
@@ -221,7 +221,7 @@ export const ordersApi = {
           totalOrders: (payload.totalOrder ?? 0).toLocaleString(),
           totalPendingOrders: (payload.totalPendingOrder ?? 0).toLocaleString(),
           totalBooksDelivered: (payload.totalBooksDelivered ?? 0).toLocaleString(),
-          printingRevenue: `$ ${(payload.printingRevenue ?? 0).toLocaleString()}`,
+          printingRevenue: `€ ${(payload.printingRevenue ?? 0).toLocaleString()}`,
         }
       }
       return initialOrderMetrics
@@ -266,9 +266,10 @@ export const ordersApi = {
           bookTitle: o.book?.theme ? o.book.theme.replace(/_/g, " ") : "Custom Storybook",
           bookCover: o.book?.coverImageUrl || "/books/ben.jpg",
           booksPrinted: `${o.quantity || 1} Copy`,
-          amount: `$${(o.totalAmount || (o.quantity * o.pricePerCopy) || 0).toFixed(2)}`,
+          amount: `€${(o.totalAmount || (o.quantity * o.pricePerCopy) || 0).toFixed(2)}`,
           status: mapBackendStatusToFrontend(o.status),
           orderDate: o.createdAt ? new Date(o.createdAt).toLocaleDateString("en-US") : "N/A",
+          createdAt: o.createdAt,
           copies: o.quantity || 1,
           shippingAddress: {
             street: o.shippingAddress?.line1 || "742 Evergreen Terrace",
@@ -389,7 +390,7 @@ export const ordersApi = {
           bookLanguage: o.book?.language,
           pdfUrl: o.book?.pdfUrl,
           booksPrinted: `${o.quantity || 1} Copy`,
-          amount: `$${Number(o.totalAmount || (o.quantity * o.pricePerCopy) || 0).toFixed(2)}`,
+          amount: `€${Number(o.totalAmount || (o.quantity * o.pricePerCopy) || 0).toFixed(2)}`,
           status: mapBackendStatusToFrontend(o.status),
           rawStatus: o.status,
           orderDate: o.createdAt
@@ -399,6 +400,7 @@ export const ordersApi = {
                 year: "numeric",
               })
             : "N/A",
+          createdAt: o.createdAt,
           paymentMethod: o.stripeSessionId ? "Credit Card (Stripe)" : "Credit Card",
           copies: o.quantity || 1,
           pricePerCopy: o.pricePerCopy,

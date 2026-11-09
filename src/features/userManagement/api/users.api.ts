@@ -235,7 +235,7 @@ export const TANVIR_USER_DATA: UserItem = {
       bookId: "6ad6f23bcf4d2d6b6a782f78",
       bookTitle: "Rishad's Mountain Adventure",
       orderDate: "10/20/2026",
-      amount: "$103.80",
+      amount: "€103.80",
       copies: 3,
       status: "Processing",
     },
@@ -244,7 +244,7 @@ export const TANVIR_USER_DATA: UserItem = {
       bookId: "6ad6f23bcf4d2d6b6a782f78",
       bookTitle: "Rishad's Mountain Adventure",
       orderDate: "10/20/2026",
-      amount: "$69.20",
+      amount: "€69.20",
       copies: 2,
       status: "Processing",
     },
@@ -253,7 +253,7 @@ export const TANVIR_USER_DATA: UserItem = {
       bookId: "6ad6f23bcf4d2d6b6a782f78",
       bookTitle: "Rishad's Mountain Adventure",
       orderDate: "10/20/2026",
-      amount: "$69.20",
+      amount: "€69.20",
       copies: 2,
       status: "Processing",
     },
@@ -440,7 +440,7 @@ export const usersApi = {
           orderDate: o.createdAt
             ? new Date(o.createdAt).toLocaleDateString("en-US")
             : "N/A",
-          amount: `$${Number(o.totalAmount || (o.quantity * o.pricePerCopy) || 0).toFixed(2)}`,
+          amount: `€${Number(o.totalAmount || (o.quantity * o.pricePerCopy) || 0).toFixed(2)}`,
           copies: o.quantity || 1,
           status:
             o.status === "DELIVERED"

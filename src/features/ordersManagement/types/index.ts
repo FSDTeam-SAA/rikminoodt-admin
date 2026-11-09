@@ -13,6 +13,7 @@ export interface OrderItem {
   id: string
   _id?: string
   customerName: string
+  name?: string
   customerAvatar: string
   email: string
   memberSince?: string
@@ -25,6 +26,7 @@ export interface OrderItem {
   status: "Delivered" | "Pending" | "Shipped" | "Printing"
   rawStatus?: string
   orderDate: string
+  createdAt?: string
   shippingAddress?: {
     street: string
     city: string

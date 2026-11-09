@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { BookOpen, DollarSign } from "lucide-react"
+import { BookOpen, Euro } from "lucide-react"
 import { OrderMetrics } from "../types"
 
 interface OrdersMetricCardsProps {
@@ -13,7 +13,7 @@ export function OrdersMetricCards({
     totalOrders: "1,450",
     totalPendingOrders: "1,200",
     totalBooksDelivered: "1,200",
-    printingRevenue: "$ 24,650",
+    printingRevenue: "€ 24,650",
   },
 }: OrdersMetricCardsProps) {
   const cards = [
@@ -43,11 +43,13 @@ export function OrdersMetricCards({
     },
     {
       title: "Printing Revenue",
-      value: metrics.printingRevenue,
+      value: metrics.printingRevenue
+        ? (metrics.printingRevenue.startsWith("$") ? metrics.printingRevenue.replace(/^\$/, "€") : metrics.printingRevenue)
+        : "€ 0",
       iconBg: "bg-purple-400/10",
       iconColor: "text-purple-400",
       borderColor: "border-purple-400/20",
-      icon: DollarSign,
+      icon: Euro,
     },
   ]
 

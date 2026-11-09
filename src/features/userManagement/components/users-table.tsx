@@ -61,9 +61,10 @@ export function UsersTable({ onSelectUser }: UsersTableProps) {
       <div className="w-full bg-white rounded-lg border border-slate-100 shadow-[0px_1px_3px_0px_rgba(228,234,248,0.7)] overflow-hidden">
         {/* Table Header */}
         <div className="w-full p-4 bg-white border-b border-[#E4EAF8] grid grid-cols-12 items-center text-stone-900 text-lg font-bold">
+          <div className="col-span-2 text-center">Registration Date</div>
           <div className="col-span-3 text-left pl-2">User Name</div>
           <div className="col-span-3 text-center">Email Address</div>
-          <div className="col-span-2 text-center">Registration Date</div>
+
           <div className="col-span-1 text-center">Books Generated</div>
           <div className="col-span-2 text-center">Books Printed</div>
           <div className="col-span-1 text-center">Action</div>
@@ -86,6 +87,12 @@ export function UsersTable({ onSelectUser }: UsersTableProps) {
                 key={user.id}
                 className="w-full px-4 py-3.5 hover:bg-slate-50/60 transition-colors grid grid-cols-12 items-center text-base"
               >
+
+                {/* Registration Date */}
+                <div className="col-span-2 text-center text-slate-900 font-normal">
+                  {user.registrationDate}
+                </div>
+
                 {/* User Name with Avatar */}
                 <Link
                   href={`/user-management/${slugifyUsername(user.name)}`}
@@ -106,10 +113,7 @@ export function UsersTable({ onSelectUser }: UsersTableProps) {
                   {user.email}
                 </div>
 
-                {/* Registration Date */}
-                <div className="col-span-2 text-center text-slate-900 font-normal">
-                  {user.registrationDate}
-                </div>
+
 
                 {/* Books Generated */}
                 <div className="col-span-1 text-center text-slate-900 font-normal">

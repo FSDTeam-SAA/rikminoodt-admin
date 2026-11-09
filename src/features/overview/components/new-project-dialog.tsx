@@ -163,7 +163,7 @@ export function NewProjectDialog({ open, onOpenChange }: NewProjectDialogProps) 
               </Label>
               <Input
                 id="proj-price"
-                placeholder="e.g. $4,250,000"
+                placeholder="e.g. €4,250,000"
                 value={price}
                 onChange={(e) => setPrice(e.target.value)}
                 className="h-9 text-xs"

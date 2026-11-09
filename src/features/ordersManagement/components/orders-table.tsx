@@ -18,6 +18,17 @@ const statusTabs: OrderStatus[] = [
   "Pending",
 ]
 
+const formatDate = (dateStr?: string) => {
+  if (!dateStr) return "N/A"
+  const d = new Date(dateStr)
+  if (isNaN(d.getTime())) return dateStr
+  return d.toLocaleDateString("en-US", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  })
+}
+
 export function OrdersTable() {
   const [searchTerm, setSearchTerm] = React.useState("")
   const [selectedStatus, setSelectedStatus] = React.useState<OrderStatus>("All")
@@ -135,11 +146,12 @@ export function OrdersTable() {
       <div className="w-full bg-white rounded-lg border border-slate-100 shadow-[0px_1px_3px_0px_rgba(228,234,248,0.7)] overflow-hidden">
         {/* Table Header */}
         <div className="w-full p-4 bg-white border-b border-[#E4EAF8] grid grid-cols-12 items-center text-stone-900 text-base lg:text-lg font-bold">
+          <div className="col-span-1 text-left pl-2">Order date</div>
           <div className="col-span-1 text-left pl-2">Order Id</div>
           <div className="col-span-2 text-left pl-2">Customer Name</div>
           <div className="col-span-2 text-center">Email Address</div>
           <div className="col-span-2 text-center">Book Title</div>
-          <div className="col-span-1 text-center">Books Printed</div>
+          {/* <div className="col-span-1 text-center">Books Printed</div> */}
           <div className="col-span-1 text-center">Amount</div>
           <div className="col-span-2 text-center">Order Status</div>
           <div className="col-span-1 text-center">Action</div>
@@ -164,6 +176,10 @@ export function OrdersTable() {
                   key={order.id}
                   className="w-full px-4 py-3.5 hover:bg-slate-50/60 transition-colors grid grid-cols-12 items-center text-base"
                 >
+                  <div className="col-span-1 text-left pl-2 text-slate-700 text-sm font-normal">
+                    {formatDate(order.createdAt || order.orderDate)}
+                  </div>
+
                   {/* Order Id */}
                   <div className="col-span-1 text-left pl-2">
                     <Link
@@ -200,13 +216,13 @@ export function OrdersTable() {
                   </div>
 
                   {/* Books Printed */}
-                  <div className="col-span-1 text-center text-slate-900 font-normal">
+                  {/* <div className="col-span-1 text-center text-slate-900 font-normal">
                     {order.booksPrinted}
-                  </div>
+                  </div> */}
 
                   {/* Amount */}
                   <div className="col-span-1 text-center text-slate-900 font-normal">
-                    {order.amount}
+                    {order.amount ? order.amount.replace(/^\$/, "€") : "€0.00"}
                   </div>
 
                   {/* Order Status */}

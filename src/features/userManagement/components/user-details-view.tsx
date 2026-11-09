@@ -49,7 +49,7 @@ export function UserDetailsView({ userId = "usr-1", onBack }: UserDetailsViewPro
       id: "ORD-1234",
       bookTitle: "Ben’s Big Dream",
       orderDate: "8/25/2027",
-      amount: "$50.99",
+      amount: "€50.99",
       copies: 10,
       status: "Delivered",
     },
@@ -57,7 +57,7 @@ export function UserDetailsView({ userId = "usr-1", onBack }: UserDetailsViewPro
       id: "ORD-1234",
       bookTitle: "Ben’s Big Dream",
       orderDate: "8/25/2027",
-      amount: "$50.99",
+      amount: "€50.99",
       copies: 10,
       status: "Delivered",
     },
@@ -65,7 +65,7 @@ export function UserDetailsView({ userId = "usr-1", onBack }: UserDetailsViewPro
       id: "ORD-1234",
       bookTitle: "Ben’s Big Dream",
       orderDate: "8/25/2027",
-      amount: "$50.99",
+      amount: "€50.99",
       copies: 10,
       status: "Delivered",
     },
@@ -385,7 +385,7 @@ export function UserDetailsView({ userId = "usr-1", onBack }: UserDetailsViewPro
                     {order.orderDate}
                   </div>
                   <div className="col-span-2 text-center text-slate-900 font-normal">
-                    {order.amount}
+                    {order.amount ? order.amount.replace(/^\$/, "€") : "€0.00"}
                   </div>
                   <div className="col-span-2 text-center text-slate-900 font-normal">
                     {order.copies}
